@@ -22,14 +22,14 @@ fn main() {
     std::fs::write("docs/index.html", output)
         .expect("Failed to write rendered output to index.html");
 
-    let mut file = match std::fs::File::open(std::path::PathBuf::from("stories.json")) {
+    let file = match std::fs::File::open(std::path::PathBuf::from("stories.json")) {
         Ok(file) => file,
         Err(err) => panic!("Trying to open stories.json in readmode - {:?}", err),
     };
 
     let stories = works::stories::Stories::new_from_file(file);
-    println!("Stories: {:?}", stories);
+    println!("Stories: {:?}\n", stories);
 
     let context = stories.create_tera_context();
-    println!("{:?}", context);
+    println!("Context: {:?}\n", context);
 }

@@ -14,12 +14,10 @@ pub struct Story {
 }
 
 impl super::Works for Stories {
-    fn create_tera_context(&self) -> Vec<tera::Context> {
-        let mut context = Vec::new();
+    fn create_tera_context(&self) -> tera::Context {
+        let mut context = tera::Context::new();
         for story in self.0.iter() {
-            context.push(
-                tera::Context::from_serialize(&story).expect("Trying to serialize to tera context"),
-            );
+            context.insert(format!("story-{}", story.id), &story);
         }
         context
     }

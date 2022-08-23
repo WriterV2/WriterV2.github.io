@@ -10,5 +10,5 @@ pub trait Works: for<'a> Deserialize<'a> {
         }
     }
 
-    fn create_tera_context(&self) -> Vec<tera::Context>;
+    fn create_tera_context(&self) -> tera::Context;
 }
