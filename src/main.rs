@@ -1,5 +1,9 @@
 use tera::{Context, Tera};
 
+use self::works::Work;
+
+mod works;
+
 fn main() {
     let tera = match Tera::new("templates/**/*.html") {
         Ok(t) => t,
@@ -17,4 +21,12 @@ fn main() {
 
     std::fs::write("docs/index.html", output)
         .expect("Failed to write rendered output to index.html");
+
+    let mut file = match std::fs::File::open(std::path::PathBuf::from("stories.json")) {
+        Ok(file) => file,
+        Err(err) => panic!("Trying to open stories.json in readmode - {:?}", err),
+    };
+
+    let stories = works::stories::Stories::new_from_file(file);
+    println!("Stories: {:?}", stories);
 }

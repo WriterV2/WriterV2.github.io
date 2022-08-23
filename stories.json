@@ -1,1 +1,9 @@
-{}
+[
+    {
+        "title": "Test",
+        "description": "Test",
+        "path_to_document": "Test",
+        "slug": "Test",
+        "language": "German"
+    }
+]
