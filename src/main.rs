@@ -1,6 +1,6 @@
 use tera::{Context, Tera};
 
-use self::works::Work;
+use crate::works::Works;
 
 mod works;
 
@@ -29,4 +29,7 @@ fn main() {
 
     let stories = works::stories::Stories::new_from_file(file);
     println!("Stories: {:?}", stories);
+
+    let context = stories.create_tera_context();
+    println!("{:?}", context);
 }

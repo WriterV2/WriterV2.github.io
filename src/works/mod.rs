@@ -9,4 +9,6 @@ pub trait Works: for<'a> Deserialize<'a> {
             Err(err) => panic!("Trying to create work from JSON File - {:?}", err),
         }
     }
+
+    fn create_tera_context(&self) -> Vec<tera::Context>;
 }
