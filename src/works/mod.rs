@@ -13,4 +13,18 @@ pub trait Works: for<'a> Deserialize<'a> + Serialize {
         context.insert("works", &self);
         Ok(context)
     }
+
+    fn render_overview_page(
+        &self,
+        tera_instance: &tera::Tera,
+        filename_without_extension: &str,
+    ) -> Result<()> {
+        Ok(std::fs::write(
+            format!("docs/{}.html", filename_without_extension).as_str(),
+            tera_instance.render(
+                format!("{}.html", filename_without_extension).as_str(),
+                &self.create_tera_context()?,
+            )?,
+        )?)
+    }
 }

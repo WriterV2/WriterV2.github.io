@@ -14,11 +14,9 @@ fn main() -> Result<()> {
 
     std::fs::write("docs/index.html", output)?;
 
-    let file = std::fs::File::open(std::path::PathBuf::from("stories.json"))?;
-    let stories = works::stories::Stories::new_from_file(file);
-    let context = stories?.create_tera_context();
-
-    let stories_html_output = tera.render("stories.html", &context?)?;
-    std::fs::write("docs/stories.html", stories_html_output)?;
+    let stories = works::stories::Stories::new_from_file(std::fs::File::open(
+        std::path::PathBuf::from("stories.json"),
+    )?);
+    stories?.render_overview_page(&tera, "stories")?;
     Ok(())
 }
