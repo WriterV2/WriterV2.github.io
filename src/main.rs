@@ -1,42 +1,24 @@
+use anyhow::Result;
 use tera::{Context, Tera};
 
 use crate::works::Works;
 
 mod works;
 
-fn main() {
-    let tera = match Tera::new("templates/**/*.html") {
-        Ok(t) => t,
-        Err(e) => {
-            println!("Parsing error(s): {}", e);
-            ::std::process::exit(1);
-        }
-    };
+fn main() -> Result<()> {
+    let tera = Tera::new("templates/**/*.html")?;
 
     let context = Context::new();
 
-    let output = tera
-        .render("index.html", &context)
-        .expect("Failed to render index.html");
+    let output = tera.render("index.html", &context)?;
 
-    std::fs::write("docs/index.html", output)
-        .expect("Failed to write rendered output to index.html");
+    std::fs::write("docs/index.html", output)?;
 
-    let file = match std::fs::File::open(std::path::PathBuf::from("stories.json")) {
-        Ok(file) => file,
-        Err(err) => panic!("Trying to open stories.json in readmode - {:?}", err),
-    };
-
+    let file = std::fs::File::open(std::path::PathBuf::from("stories.json"))?;
     let stories = works::stories::Stories::new_from_file(file);
-    println!("Stories: {:?}\n", stories);
+    let context = stories?.create_tera_context();
 
-    let context = stories.create_tera_context();
-    println!("Context: {:?}\n", context);
-
-    let stories_html_output = tera
-        .render("stories.html", &context)
-        .expect("Failed to render stories.html");
-
-    std::fs::write("docs/stories.html", stories_html_output)
-        .expect("Failed to write rendered output to stories.html");
+    let stories_html_output = tera.render("stories.html", &context?)?;
+    std::fs::write("docs/stories.html", stories_html_output)?;
+    Ok(())
 }
