@@ -32,4 +32,11 @@ fn main() {
 
     let context = stories.create_tera_context();
     println!("Context: {:?}\n", context);
+
+    let stories_html_output = tera
+        .render("stories.html", &context)
+        .expect("Failed to render stories.html");
+
+    std::fs::write("docs/stories.html", stories_html_output)
+        .expect("Failed to write rendered output to stories.html");
 }

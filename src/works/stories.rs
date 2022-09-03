@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Stories(pub Vec<Story>);
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -13,15 +13,7 @@ pub struct Story {
     pub language: Language,
 }
 
-impl super::Works for Stories {
-    fn create_tera_context(&self) -> tera::Context {
-        let mut context = tera::Context::new();
-        for story in self.0.iter() {
-            context.insert(format!("story-{}", story.id), &story);
-        }
-        context
-    }
-}
+impl super::Works for Stories {}
 
 #[derive(Deserialize, Serialize, Debug)]
 pub enum Language {
