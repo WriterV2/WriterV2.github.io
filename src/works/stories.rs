@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
 
+// stories and their information
+// derive from JSON
+// process to context for HTML
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Stories(pub Vec<Story>);
 
@@ -13,8 +16,10 @@ pub struct Story {
     pub language: Language,
 }
 
+// see src/works/mod.rs for information of Works trait
 impl super::Works for Stories {}
 
+// language of story content
 #[derive(Deserialize, Serialize, Debug)]
 pub enum Language {
     German,
