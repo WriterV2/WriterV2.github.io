@@ -1,0 +1,108 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+*:focus, *::selection {
+  background-color: inherit;
+  outline: none !important;
+  color: #ededed;
+}
+
+body {
+  background-color: #131313;
+  color: lightgray;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.6;
+}
+
+header {
+  text-align: center;
+  padding: 1em 0em;
+}
+header h1 {
+  font-family: "Times New Roman", Times, serif;
+  letter-spacing: 0.1em;
+}
+
+nav {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 0em 2em;
+  background-color: #131313;
+}
+
+main {
+  margin: 2em;
+  min-height: calc(100vh - 108.8px - 25.6px - 25.6px);
+  display: grid;
+  row-gap: 2em;
+  column-gap: 2em;
+}
+main .work-card:nth-child(even) {
+  background-position: left;
+  align-items: flex-end;
+}
+@media screen and (min-width: 992px) {
+  main {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+footer {
+  text-align: center;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+a:hover {
+  border-color: #a29d7f;
+  color: #ededed;
+}
+
+.work-card {
+  padding: 2em;
+  background-color: #333;
+  border-radius: 0.3em;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: right;
+  border: 1px solid #131313;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-blend-mode: overlay;
+}
+.work-card .title-and-description, .work-card .info {
+  max-width: 50%;
+}
+.work-card .title-and-description h3, .work-card .info h3 {
+  font-weight: lighter;
+  color: #a29d7f;
+}
+@media screen and (max-width: 650px) {
+  .work-card .title-and-description, .work-card .info {
+    font-size: 0.8em;
+    max-width: 70%;
+  }
+}
+@media screen and (max-width: 500px) {
+  .work-card .title-and-description, .work-card .info {
+    font-size: 0.7em;
+    max-width: 100%;
+  }
+}
+.work-card .info span {
+  background-color: #131313;
+  padding: 0.5em;
+  margin: 0 0.5em;
+}
+.work-card:hover {
+  border: 1px solid #a29d7f;
+}
+
+/*# sourceMappingURL=style.css.map */
