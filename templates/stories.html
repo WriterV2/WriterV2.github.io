@@ -1,6 +1,26 @@
 {% extends "base.html" %}
 {% block title %}Stories{% endblock title %}
 {% block content %}
+<div class="works-filter">
+    <form>
+        <label for="language">Language: </label>
+        <select name="language" id="language">
+            <option value="*">All</option>
+            {% for work in works | unique(attribute="language") %}
+            <option value="{{work.language}}">{{work.language}}</option>
+            {% endfor %}
+        </select>
+        <label for="story_type">Story Type: </label>
+        <select name="story_type" id="story_type">
+            <option value="*">All</option>
+            {% for work in works | unique(attribute="story_type") %}
+            <option value="{{work.story_type}}">{{work.story_type}}</option>
+            {% endfor %}
+        </select>
+        <input type="reset">
+        <input type="submit" value="Filter">
+    </form>
+</div>
 <div class="works">
     {% for work in works %}
         <a href="{{work.path_to_document}}" style="background-image: url('./images/workcardimages/{{work.path_to_image}}');" class="work-card" download>
