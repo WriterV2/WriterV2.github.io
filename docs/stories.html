@@ -22,7 +22,7 @@
 <div class="works-filter">
     <form>
         <label for="language">Language: </label>
-        <select name="language" id="language">
+        <select name="language" id="language-select">
             <option value="*">All</option>
             
             <option value="German">German</option>
@@ -30,8 +30,8 @@
             <option value="English">English</option>
             
         </select>
-        <label for="story_type">Story Type: </label>
-        <select name="story_type" id="story_type">
+        <label for="story-type">Story Type: </label>
+        <select name="story-type" id="story-type-select">
             <option value="*">All</option>
             
             <option value="Shortstory">Shortstory</option>
@@ -39,8 +39,6 @@
             <option value="Screenplay">Screenplay</option>
             
         </select>
-        <input type="reset">
-        <input type="submit" value="Filter">
     </form>
 </div>
 <div class="works">
@@ -52,8 +50,8 @@
                     </div>
                     <div class="info">
                         <span>7 Pages</span>
-                        <span>German</span>
-                        <span>Shortstory</span>
+                        <span class="story-language">German</span>
+                        <span class="story-type">Shortstory</span>
                     </div>
         </a>
     
@@ -64,8 +62,8 @@
                     </div>
                     <div class="info">
                         <span>2 Pages</span>
-                        <span>German</span>
-                        <span>Shortstory</span>
+                        <span class="story-language">German</span>
+                        <span class="story-type">Shortstory</span>
                     </div>
         </a>
     
@@ -76,8 +74,8 @@
                     </div>
                     <div class="info">
                         <span>2 Pages</span>
-                        <span>English</span>
-                        <span>Screenplay</span>
+                        <span class="story-language">English</span>
+                        <span class="story-type">Screenplay</span>
                     </div>
         </a>
     
@@ -87,6 +85,7 @@
     <footer>
         Vithuran Vishnuthas &copy; 2022
     </footer>
+    <script src="./stories.js"></script>
 </body>
 
 </html>
