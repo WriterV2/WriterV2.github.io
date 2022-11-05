@@ -2,6 +2,7 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  letter-spacing: 0.02em;
 }
 *:focus, *::selection {
   background-color: inherit;
@@ -54,6 +55,8 @@ main .works .work-card:nth-child(even) {
 
 footer {
   text-align: center;
+  font-size: 0.8em;
+  background-color: #333;
 }
 
 a {
@@ -105,6 +108,25 @@ a:hover {
 }
 .work-card:hover {
   border: 1px solid #a29d7f;
+}
+
+.works-filter {
+  padding: 1em;
+  font-size: 0.9em;
+}
+@media screen and (max-width: 500px) {
+  .works-filter {
+    font-size: 0.7em;
+  }
+}
+.works-filter label {
+  margin-left: 2em;
+  color: lightgray;
+}
+.works-filter select {
+  background-color: #333;
+  color: #a29d7f;
+  border: none;
 }
 
 /*# sourceMappingURL=style.css.map */

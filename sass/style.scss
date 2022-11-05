@@ -12,6 +12,7 @@ $accent-color: #a29d7f;
         outline: none !important;
         color: lighten($color: $font-color, $amount: 10);
     }
+    letter-spacing: 0.02em;
 }
 
 body {
@@ -57,9 +58,10 @@ main {
 
 }
 
-
 footer {
     text-align: center;
+    font-size: 0.8em;
+    background-color: $box-color;
 }
 
 a {
@@ -109,5 +111,23 @@ a {
     }
     &:hover {
         border: 1px solid $accent-color;
+    }
+}
+
+.works-filter {
+    padding: 1em;
+    font-size: 0.9em;
+    @media screen and (max-width: 500px) {
+        font-size: 0.7em;
+    }
+
+    label {
+        margin-left: 2em;
+        color: $font-color;
+    }
+    select {
+        background-color: $box-color;
+        color: $accent-color;
+        border: none;
     }
 }
