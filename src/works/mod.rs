@@ -8,9 +8,9 @@ pub trait Works: for<'a> Deserialize<'a> + Serialize {
     // create works from the corresponding JSON file,
     // e.g. stories from stories.json
     fn new_from_file(file: std::fs::File) -> Result<Self> {
-        Ok(serde_json::from_reader(std::io::BufReader::new(&file))
+        serde_json::from_reader(std::io::BufReader::new(&file))
             // add error context
-            .with_context(|| format!("Failed to create works from {:?}", &file))?)
+            .with_context(|| format!("Failed to create works from {:?}", &file))
     }
 
     // crate tera context from the group of work
@@ -28,7 +28,7 @@ pub trait Works: for<'a> Deserialize<'a> + Serialize {
         tera_instance: &tera::Tera,
         filename_without_extension: &str,
     ) -> Result<()> {
-        Ok(std::fs::write(
+        std::fs::write(
             format!("docs/{}.html", filename_without_extension).as_str(),
             tera_instance.render(
                 format!("{}.html", filename_without_extension).as_str(),
@@ -41,6 +41,6 @@ pub trait Works: for<'a> Deserialize<'a> + Serialize {
                 "Failed to render overview page for {:?}",
                 filename_without_extension
             )
-        })?)
+        })
     }
 }
