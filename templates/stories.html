@@ -1,19 +1,17 @@
 {% extends "base.html" %}
 {% block title %}Stories{% endblock title %}
 {% block content %}
-{% for work in works %}
-<a href="{{work.path_to_document}}" style="background-image: url('{{work.path_to_image}}');" class="work-card" download>
-    <!--<article class="story-section" style="background-image: url('{{work.path_to_image}}');">-->
-            <div class="title-and-description">
-                <h3>{{work.title}}</h3>
-                <p>{{work.description}}</p>
-            </div>
-            <div class="info">
-                <span>{{work.number_of_pages}} Pages</span>
-                <span>{{work.language}}</span>
-                <span>{{work.story_type}}</span>
-            </div>
-            <!--</article>-->
-</a>
-{% endfor %}
+    {% for work in works %}
+        <a href="{{work.path_to_document}}" style="background-image: url('./images/workcardimages/{{work.path_to_image}}');" class="work-card" download>
+                    <div class="title-and-description">
+                        <h3>{{work.title}}</h3>
+                        <p>{{work.description}}</p>
+                    </div>
+                    <div class="info">
+                        <span>{{work.number_of_pages}} Pages</span>
+                        <span>{{work.language}}</span>
+                        <span>{{work.story_type}}</span>
+                    </div>
+        </a>
+    {% endfor %}
 {% endblock content %}
