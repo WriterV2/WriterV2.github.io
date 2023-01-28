@@ -21,7 +21,7 @@
 </div>
 <div class="works">
     {% for work in works %}
-        <a href="{{work.path_to_document}}" style="background-image: url('./images/workcardimages/{{work.path_to_image}}');" class="work-card" download>
+        <a href="{{work.path_to_document}}" class="work-card" download>
                     <div class="title-and-description">
                         <h3>{{work.title}}</h3>
                         <p>{{work.description}}</p>

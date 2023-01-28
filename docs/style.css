@@ -43,13 +43,14 @@ main .works {
   row-gap: 2em;
   column-gap: 2em;
 }
-main .works .work-card:nth-child(even) {
-  background-position: left;
-  align-items: flex-end;
-}
-@media screen and (min-width: 992px) {
+@media screen and (min-width: 768px) {
   main .works {
     grid-template-columns: 1fr 1fr;
+  }
+}
+@media screen and (min-width: 1024px) {
+  main .works {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
   }
 }
 
@@ -72,34 +73,15 @@ a:hover {
   padding: 2em;
   background-color: #333;
   border-radius: 0.3em;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: right;
   border: 1px solid #131313;
   height: 250px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-blend-mode: overlay;
-}
-.work-card .title-and-description, .work-card .info {
-  max-width: 50%;
 }
 .work-card .title-and-description h3, .work-card .info h3 {
   font-weight: lighter;
   color: #a29d7f;
-}
-@media screen and (max-width: 650px) {
-  .work-card .title-and-description, .work-card .info {
-    font-size: 0.8em;
-    max-width: 70%;
-  }
-}
-@media screen and (max-width: 500px) {
-  .work-card .title-and-description, .work-card .info {
-    font-size: 0.7em;
-    max-width: 100%;
-  }
 }
 .work-card .info span {
   background-color: #131313;
@@ -111,7 +93,7 @@ a:hover {
 }
 
 .works-filter {
-  padding: 1em;
+  padding-bottom: 2em;
   font-size: 0.9em;
 }
 @media screen and (max-width: 500px) {

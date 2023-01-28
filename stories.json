@@ -4,7 +4,6 @@
         "title": "Mit gutem Gewissen",
         "description": "Lorem ipsum dolor sit amet, officia excepteur.",
         "path_to_document": "./stories/mit_gutem_gewissen.pdf",
-        "path_to_image": "mit_gutem_gewissen_image.png",
         "number_of_pages": 7,
         "story_type": "Shortstory",
         "language": "German"
@@ -14,7 +13,6 @@
         "title": "Das schweigende Spiegelbild",
         "description": "Em pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.",
         "path_to_document": "./stories/das_schweigende_spiegelbild.pdf",
-        "path_to_image": "das_schweigende_spiegelbild_image.png",
         "number_of_pages": 2,
         "story_type": "Shortstory",
         "language": "German"
@@ -24,7 +22,6 @@
         "title": "Hubristic Failures",
         "description": "Ui minim labore adipisicing minim sint cillum sint consectetur cupidatat.ex esse exercitation idatat excepteur officia.",
         "path_to_document": "./stories/hubristic_failures.pdf",
-        "path_to_image": "hubristic_failures_image.png",
         "number_of_pages": 2,
         "story_type": "Screenplay",
         "language": "English"

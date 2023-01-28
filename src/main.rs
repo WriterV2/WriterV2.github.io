@@ -3,11 +3,9 @@ use tera::{Context, Tera};
 
 use crate::works::Works;
 
-mod images_processing;
 mod works;
 
 fn main() -> Result<()> {
-    images_processing::resize_workcard_images()?;
     // new tera instance
     let tera = Tera::new("templates/**/*.html")?;
 

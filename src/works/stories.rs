@@ -12,7 +12,6 @@ pub struct Story {
     pub title: String,
     pub description: String,
     pub path_to_document: String,
-    pub path_to_image: String,
     pub number_of_pages: u16,
     pub story_type: String,
     pub language: Language,
