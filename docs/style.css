@@ -74,19 +74,28 @@ a:hover {
   background-color: #333;
   border-radius: 0.3em;
   border: 1px solid #131313;
-  height: 250px;
+  height: 300px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
+@media screen and (min-width: 600px) {
+  .work-card {
+    height: 250px;
+  }
+}
 .work-card .title-and-description h3, .work-card .info h3 {
-  font-weight: lighter;
+  font-weight: 500;
   color: #a29d7f;
+}
+.work-card .info {
+  display: flex;
+  flex-flow: row wrap;
 }
 .work-card .info span {
   background-color: #131313;
   padding: 0.5em;
-  margin: 0 0.5em;
+  margin: 0 0.5em 0.5em;
   font-size: 0.8em;
 }
 .work-card:hover {
@@ -95,11 +104,11 @@ a:hover {
 
 .works-filter {
   padding-bottom: 2em;
-  font-size: 0.9em;
+  font-size: 0.7em;
 }
-@media screen and (max-width: 500px) {
+@media screen and (min-width: 600px) {
   .works-filter {
-    font-size: 0.7em;
+    font-size: 0.9em;
   }
 }
 .works-filter label {
@@ -110,6 +119,8 @@ a:hover {
   background-color: #333;
   color: #a29d7f;
   border: none;
+  text-align: center;
+  padding: 0.2em;
 }
 
 /*# sourceMappingURL=style.css.map */
