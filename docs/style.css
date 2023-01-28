@@ -131,6 +131,13 @@ h3 {
   padding: 0.2em;
 }
 
+.works-description {
+  margin: 2em 1em;
+  padding: 1em;
+  border: 1px solid #333;
+  font-size: 0.9em;
+}
+
 table {
   border-collapse: collapse;
   width: 100%;

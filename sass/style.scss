@@ -77,11 +77,11 @@ a {
         color: lighten($color: $font-color, $amount: 10);
     }
 }
+
 h3 {
     font-weight: 500;
     color: $accent-color;
 }
-
 
 .work-card {
     padding: 2em;
@@ -127,6 +127,13 @@ h3 {
         text-align: center;
         padding: 0.2em;
     }
+}
+
+.works-description {
+    margin: 2em 1em;
+    padding: 1em;
+    border: 1px solid $box-color;
+    font-size: 0.9em;
 }
 
 table {
