@@ -13,7 +13,6 @@ pub struct Story {
     pub description: String,
     pub path_to_document: String,
     pub number_of_pages: u16,
-    pub story_type: String,
     pub language: Language,
 }
 

@@ -5,7 +5,6 @@
         "description": "Lorem ipsum dolor sit amet, officia excepteur.",
         "path_to_document": "./stories/mit_gutem_gewissen.pdf",
         "number_of_pages": 7,
-        "story_type": "Shortstory",
         "language": "German"
     },
     {
@@ -14,16 +13,6 @@
         "description": "Em pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.",
         "path_to_document": "./stories/das_schweigende_spiegelbild.pdf",
         "number_of_pages": 2,
-        "story_type": "Shortstory",
         "language": "German"
-    },
-    {
-        "id": 3,
-        "title": "Hubristic Failures",
-        "description": "Ui minim labore adipisicing minim sint cillum sint consectetur cupidatat.ex esse exercitation idatat excepteur officia.",
-        "path_to_document": "./stories/hubristic_failures.pdf",
-        "number_of_pages": 2,
-        "story_type": "Screenplay",
-        "language": "English"
     }
 ]
