@@ -87,6 +87,7 @@ a:hover {
   background-color: #131313;
   padding: 0.5em;
   margin: 0 0.5em;
+  font-size: 0.8em;
 }
 .work-card:hover {
   border: 1px solid #a29d7f;

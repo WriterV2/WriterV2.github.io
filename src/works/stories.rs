@@ -1,3 +1,4 @@
+use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 
 // stories and their information
@@ -8,12 +9,12 @@ pub struct Stories(pub Vec<Story>);
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Story {
-    pub id: u8,
     pub title: String,
     pub description: String,
     pub path_to_document: String,
     pub number_of_pages: u16,
     pub language: Language,
+    pub last_update: NaiveDate,
 }
 
 // see src/works/mod.rs for information of Works trait

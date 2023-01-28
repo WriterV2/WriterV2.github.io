@@ -1,18 +1,18 @@
 [
     {
-        "id": 1,
         "title": "Mit gutem Gewissen",
         "description": "Lorem ipsum dolor sit amet, officia excepteur.",
         "path_to_document": "./stories/mit_gutem_gewissen.pdf",
         "number_of_pages": 7,
-        "language": "German"
+        "language": "German",
+        "last_update": "2023-01-28"
     },
     {
-        "id": 2,
         "title": "Das schweigende Spiegelbild",
         "description": "Em pariatur mollit ex esse exercitation amet. Nisi anim cupidatat excepteur officia.",
         "path_to_document": "./stories/das_schweigende_spiegelbild.pdf",
         "number_of_pages": 2,
-        "language": "German"
+        "language": "German",
+        "last_update": "2023-01-28"
     }
 ]
