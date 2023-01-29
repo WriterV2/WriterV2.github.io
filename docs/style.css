@@ -57,7 +57,17 @@ main .works {
 }
 @media screen and (min-width: 1024px) {
   main .works {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+main .about-me {
+  display: grid;
+  row-gap: 2em;
+  column-gap: 2em;
+}
+@media screen and (min-width: 1024px) {
+  main .about-me {
+    grid-template-columns: 1fr 1fr 1fr;
   }
 }
 
@@ -81,33 +91,45 @@ h3 {
   color: #a29d7f;
 }
 
-.work-card {
+.card {
   padding: 2em;
   background-color: #333;
   border-radius: 0.3em;
   border: 1px solid #131313;
-  height: 300px;
+}
+.card.work-card {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  height: 350px;
 }
-@media screen and (min-width: 600px) {
-  .work-card {
-    height: 250px;
-  }
-}
-.work-card .info {
+.card.work-card .info {
   display: flex;
   flex-flow: row wrap;
 }
-.work-card .info span {
+.card.work-card .info span {
   background-color: #131313;
   padding: 0.5em;
   margin: 0 0.5em 0.5em;
   font-size: 0.8em;
 }
-.work-card:hover {
+.card.work-card:hover {
   border: 1px solid #a29d7f;
+}
+@media screen and (min-width: 480px) {
+  .card.work-card {
+    height: 250px;
+  }
+}
+@media screen and (min-width: 768px) {
+  .card.work-card {
+    height: 300px;
+  }
+}
+@media screen and (min-width: 1024px) {
+  .card.work-card {
+    height: 350px;
+  }
 }
 
 .works-filter {
@@ -141,19 +163,14 @@ h3 {
 table {
   border-collapse: collapse;
   width: 100%;
-  margin: 1em;
+  background-color: #131313;
+  margin: 0.8em 0;
 }
 table tr td {
-  border: 1px solid #131313;
-  background-color: #333;
+  border: 1px solid #333;
   text-align: left;
   padding: 1em;
   font-size: 0.9em;
-}
-table tr.title-row td {
-  border: none;
-  background-color: #131313;
-  font-size: inherit;
 }
 
 /*# sourceMappingURL=style.css.map */
