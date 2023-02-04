@@ -21,6 +21,9 @@ pub trait Works: for<'a> Deserialize<'a> + Serialize {
         Ok(context)
     }
 
+    // render page for every work
+    fn render_single_pages(&self, tera_instance: &tera::Tera, template_name: &str) -> Result<()>;
+
     // render corresponding overview HTML template
     // with its tera context
     fn render_overview_page(

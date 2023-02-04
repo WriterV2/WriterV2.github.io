@@ -18,7 +18,15 @@ pub struct Story {
 }
 
 // see src/works/mod.rs for information of Works trait
-impl super::Works for Stories {}
+impl super::Works for Stories {
+    fn render_single_pages(
+        &self,
+        tera_instance: &tera::Tera,
+        template_name: &str,
+    ) -> anyhow::Result<()> {
+        !unimplemented!()
+    }
+}
 
 // language of story content
 #[derive(Deserialize, Serialize, Debug)]

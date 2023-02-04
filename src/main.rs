@@ -15,9 +15,11 @@ fn main() -> Result<()> {
     std::fs::write("docs/index.html", output)?;
 
     // render stories.html file
-    let stories = works::stories::Stories::new_from_file(std::fs::File::open(
-        std::path::PathBuf::from("stories.json"),
+    let stories = std::rc::Rc::new(works::stories::Stories::new_from_file(
+        std::fs::File::open(std::path::PathBuf::from("stories.json"))?,
     )?);
-    stories?.render_overview_page(&tera, "stories")?;
+    std::rc::Rc::clone(&stories).render_overview_page(&tera, "stories")?;
+    std::rc::Rc::clone(&stories).render_single_pages(&tera, "story")?;
+
     Ok(())
 }
