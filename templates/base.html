@@ -22,7 +22,7 @@
         {% block content %} {% endblock content%}
     </main>
     <footer>
-        Vithuran Vishnuthas &copy; 2022
+        Vithuran Vishnuthas &copy; 2022 - {{ now() | date(format="%Y") }}
     </footer>
     {% block jsfile %}
     {% endblock jsfile %}
