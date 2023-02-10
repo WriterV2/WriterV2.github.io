@@ -18,7 +18,7 @@ Despite my linguistic difficulties to express myself, my love for story telling 
 </div>
 <div class="works">
     {% for work in works | sort(attribute="last_update") | reverse %}
-        <a href="./stories/{{work.path_to_document | replace(from='pdf', to='html')}}" class="work-card card">
+        <a href="./stories/{{ work.path_to_document | replace(from='pdf', to='html') }}" class="work-card card">
             <div class="title-and-description">
                 <h3>{{work.title}}</h3>
                 <p>{{work.description}}</p>
