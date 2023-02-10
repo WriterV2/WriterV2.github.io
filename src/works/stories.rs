@@ -31,17 +31,30 @@ impl super::Works for Stories {
             let mut context = tera::Context::new();
             context.insert("story", story);
             result.push(std::fs::write(
-                format!(
-                    // use story document name for the single page
-                    // e.g. mit_gutem_gewissen.pdf -> mit_gutem_gewissen.html
-                    "docs/stories/{}.html",
-                    story.path_to_document.replace(".pdf", "")
-                )
-                .as_str(),
+                story.get_html_path()?.as_str(),
                 tera_instance.render(format!("{}.html", template_name).as_str(), &context)?,
             ));
         }
         Ok(())
+    }
+}
+
+impl Story {
+    // check if story document was modified
+    fn document_modified(&self) -> anyhow::Result<bool> {
+        Ok(
+            std::fs::metadata(format!("docs/stories/{}", &self.path_to_document))?.modified()?
+                > std::fs::metadata(self.get_html_path()?)?.modified()?,
+        )
+    }
+
+    // use story document name for the single page
+    // e.g. mit_gutem_gewissen.pdf -> mit_gutem_gewissen.html
+    fn get_html_path(&self) -> anyhow::Result<String> {
+        Ok(format!(
+            "docs/stories/{}.html",
+            self.path_to_document.replace(".pdf", "")
+        ))
     }
 }
 
