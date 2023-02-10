@@ -2,7 +2,7 @@
     {
         "title": "Mit gutem Gewissen",
         "description": "Der gefährliche Zauber von Leon wird von seinem wegweisenden Freund durchschaut. Kann er ihn stoppen?",
-        "path_to_document": "./stories/mit_gutem_gewissen.pdf",
+        "path_to_document": "mit_gutem_gewissen.pdf",
         "number_of_pages": 7,
         "language": "German",
         "last_update": "2023-01-28"
@@ -10,7 +10,7 @@
     {
         "title": "Das schweigende Spiegelbild",
         "description": "Das Spiegelbild verzweifelt in seiner Hilflosigkeit gegenüber seinem Ich.",
-        "path_to_document": "./stories/das_schweigende_spiegelbild.pdf",
+        "path_to_document": "das_schweigende_spiegelbild.pdf",
         "number_of_pages": 2,
         "language": "German",
         "last_update": "2023-01-28"
