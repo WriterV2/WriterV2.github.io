@@ -27,7 +27,7 @@ impl super::Works for Stories {
     ) -> anyhow::Result<()> {
         let mut result = Vec::new();
         for story in self.0.iter() {
-            if story.document_modified()? {
+            if story.update_available()? {
                 let mut context = tera::Context::new();
                 context.insert("story", story);
                 context.insert("text", &story.get_text()?);
@@ -42,11 +42,19 @@ impl super::Works for Stories {
 }
 
 impl Story {
-    // check if story document was modified
-    fn document_modified(&self) -> anyhow::Result<bool> {
+    // check if it's necessary to re-compile the html single page
+    fn update_available(&self) -> anyhow::Result<bool> {
         Ok(
+            // pdf document changes
             std::fs::metadata(format!("docs/stories/{}", &self.path_to_document))?.modified()?
-                > std::fs::metadata(self.get_html_path()?)?.modified()?,
+                > std::fs::metadata(self.get_html_path()?)?.modified()?
+                // base template changes
+                || std::fs::metadata("templates/base.html")?.modified()?
+                    > std::fs::metadata(self.get_html_path()?)?.modified()?
+                // story template changes
+                ||std::fs::metadata("templates/story.html")?.modified()? > std::fs::metadata(self.get_html_path()?)?.modified()?
+                // HTML file doesn't exist yet
+                || !std::path::Path::new(&self.get_html_path()?).exists(),
         )
     }
 
