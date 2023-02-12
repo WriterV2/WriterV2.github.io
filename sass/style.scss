@@ -162,3 +162,18 @@ h3 {
     border: 1px solid $box-color;
     font-size: 0.9em;
 }
+
+.download-button {
+    border: 1px solid $accent-color;
+    padding: 0.5em;
+    margin: 0.5em 3em;
+    font-size: 0.8em;
+    color: $accent-color;
+}
+
+.story-text {
+    margin: 2em;
+    padding: 3em;
+    line-height: 2.5rem;
+    background-color: $box-color;
+}
