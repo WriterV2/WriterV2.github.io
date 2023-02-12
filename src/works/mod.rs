@@ -18,7 +18,7 @@ pub trait Works: for<'a> Deserialize<'a> + Serialize {
     fn create_tera_context(&self) -> Result<tera::Context> {
         let mut context = tera::Context::new();
         context.insert("works", &self);
-        Ok(context)
+        anyhow::Ok(context).with_context(|| "Failed to create works")
     }
 
     // render page for every work

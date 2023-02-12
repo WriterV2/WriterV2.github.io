@@ -1,3 +1,4 @@
+use anyhow::Context;
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 
@@ -32,39 +33,40 @@ impl super::Works for Stories {
                 context.insert("story", story);
                 context.insert("text", &story.get_text()?);
                 result.push(std::fs::write(
-                    story.get_html_path()?.as_str(),
+                    story.get_html_path().as_str(),
                     tera_instance.render(format!("{}.html", template_name).as_str(), &context)?,
                 ));
             }
         }
-        Ok(())
+        anyhow::Ok(()).with_context(|| "Failed to render single story pages")
     }
 }
 
 impl Story {
     // check if it's necessary to re-compile the html single page
     fn update_available(&self) -> anyhow::Result<bool> {
-        Ok(
-            // pdf document changes
+        // pdf document changes
+        anyhow::Ok(
             std::fs::metadata(format!("docs/stories/{}", &self.path_to_document))?.modified()?
-                > std::fs::metadata(self.get_html_path()?)?.modified()?
+                > std::fs::metadata(self.get_html_path())?.modified()?
                 // base template changes
                 || std::fs::metadata("templates/base.html")?.modified()?
-                    > std::fs::metadata(self.get_html_path()?)?.modified()?
+                    > std::fs::metadata(self.get_html_path())?.modified()?
                 // story template changes
-                ||std::fs::metadata("templates/story.html")?.modified()? > std::fs::metadata(self.get_html_path()?)?.modified()?
+                ||std::fs::metadata("templates/story.html")?.modified()? > std::fs::metadata(self.get_html_path())?.modified()?
                 // HTML file doesn't exist yet
-                || !std::path::Path::new(&self.get_html_path()?).exists(),
-        )
+                || !std::path::Path::new(&self.get_html_path()).exists()
+                // add error context
+                ).with_context(|| format!("Failed to check for update for {}", self.title))
     }
 
     // use story document name for the single page
     // e.g. mit_gutem_gewissen.pdf -> mit_gutem_gewissen.html
-    fn get_html_path(&self) -> anyhow::Result<String> {
-        Ok(format!(
+    fn get_html_path(&self) -> String {
+        format!(
             "docs/stories/{}.html",
             self.path_to_document.replace(".pdf", "")
-        ))
+        )
     }
 
     // extract text from pdf document
@@ -91,7 +93,7 @@ impl Story {
             .replace_all(&text, " ")
             .to_string();
 
-        Ok(text)
+        anyhow::Ok(text).with_context(|| format!("Failed to extract text for {}", self.title))
     }
 }
 
