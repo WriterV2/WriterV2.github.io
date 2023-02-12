@@ -171,7 +171,7 @@ h3 {
 }
 
 .download-button {
-  border: 1px solid #a29d7f;
+  border: 1px solid #333;
   padding: 0.5em;
   margin: 0.5em 3em;
   font-size: 0.8em;
@@ -179,10 +179,23 @@ h3 {
 }
 
 .story-text {
-  margin: 2em;
   padding: 3em;
-  line-height: 2.5rem;
-  background-color: #333;
+  margin: 2em 1em;
+  border: 1px solid #333;
+  line-height: 1.8rem;
+  font-size: 0.9em;
+}
+@media screen and (min-width: 480px) {
+  .story-text {
+    line-height: 2rem;
+    margin: 2em;
+  }
+}
+@media screen and (min-width: 768px) {
+  .story-text {
+    line-height: 2.5rem;
+    font-size: 1em;
+  }
 }
 
 /*# sourceMappingURL=style.css.map */

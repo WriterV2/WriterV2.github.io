@@ -1,9 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{story.title}}{% endblock title %}
 {% block content %}
-    <main>
-        <h2>{{story.title}}</h2>
-        <a class="download-button" href="{{story.path_to_document}}" download>Download PDF</a>
-        <p class="story-text">{{text | safe}}</p>
-    </main>
+    <h2>{{story.title}}</h2>
+    <a class="download-button" href="{{story.path_to_document}}" download>Download PDF</a>
+    <p class="story-text">{{text | safe}}</p>
 {% endblock content %}
