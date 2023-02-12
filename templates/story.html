@@ -4,6 +4,6 @@
     <main>
         <h2>{{story.title}}</h2>
         <a class="download-button" href="{{story.path_to_document}}" download>Download PDF</a>
-        <p class="story-text">{{text}}</p>
+        <p class="story-text">{{text | safe}}</p>
     </main>
 {% endblock content %}

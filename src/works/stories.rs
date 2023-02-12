@@ -70,21 +70,27 @@ impl Story {
     // extract text from pdf document
     fn get_text(&self) -> anyhow::Result<String> {
         // TODO:
-        // - Clean and optimise
-        // - Find a solution where you can use 1-2 digit numbers in the texts
-        // - You should add linebreaks between paragraphs
+        // - 1-2 digit number with linebreak e.g. "Es ist 10\n geworden" not usable in texts
+        // - currently only linebreaks before quotes, but not after paragraphs
         let mut text =
             pdf_extract::extract_text(format!("docs/stories/{}", &self.path_to_document))?;
-        let re = regex::Regex::new(r"\d{1,2}")?;
-        let re2 = regex::Regex::new(r"-\d{1,2}\n+ ?")?;
-        let re3 = regex::Regex::new(r"-\n+")?;
-        let re4 = regex::Regex::new(r"\n\n")?;
-        let re5 = regex::Regex::new(r"\n")?;
-        text = re2.replace_all(&text, "").to_string();
-        text = re.replace_all(&text, "").to_string();
-        text = re3.replace_all(&text, "").to_string();
-        text = re4.replace_all(&text, " ").to_string();
-        text = re5.replace_all(&text, "").to_string();
+
+        text = regex::Regex::new(r"\n\n»")?
+            .replace_all(&text, "<br>»")
+            .to_string();
+        text = regex::Regex::new(r"\d{1,2}?\n \d")?
+            .replace_all(&text, "")
+            .to_string();
+        text = regex::Regex::new(r"-?\d{1,2}\n")?
+            .replace_all(&text, "")
+            .to_string();
+        text = regex::Regex::new(r"-\n\n")?
+            .replace_all(&text, "")
+            .to_string();
+        text = regex::Regex::new("\n\n")?
+            .replace_all(&text, " ")
+            .to_string();
+
         Ok(text)
     }
 }
