@@ -45,19 +45,19 @@ impl super::Works for Stories {
 impl Story {
     // check if it's necessary to re-compile the html single page
     fn update_available(&self) -> anyhow::Result<bool> {
-        // pdf document changes
         anyhow::Ok(
-            std::fs::metadata(format!("docs/stories/{}", &self.path_to_document))?.modified()?
+            // HTML file doesn't exist yet
+            !std::path::Path::new(&self.get_html_path()).exists() 
+            // pdf document changes
+            || std::fs::metadata(format!("docs/stories/{}", &self.path_to_document))?.modified()?
                 > std::fs::metadata(self.get_html_path())?.modified()?
-                // base template changes
-                || std::fs::metadata("templates/base.html")?.modified()?
-                    > std::fs::metadata(self.get_html_path())?.modified()?
-                // story template changes
-                ||std::fs::metadata("templates/story.html")?.modified()? > std::fs::metadata(self.get_html_path())?.modified()?
-                // HTML file doesn't exist yet
-                || !std::path::Path::new(&self.get_html_path()).exists()
-                // add error context
-                ).with_context(|| format!("Failed to check for update for {}", self.title))
+            // base template changes
+            || std::fs::metadata("templates/base.html")?.modified()?
+                > std::fs::metadata(self.get_html_path())?.modified()?
+            // story template changes
+            ||std::fs::metadata("templates/story.html")?.modified()? > std::fs::metadata(self.get_html_path())?.modified()?, // add error context
+        )
+        .with_context(|| format!("Failed to check for update for {}", self.title))
     }
 
     // use story document name for the single page
