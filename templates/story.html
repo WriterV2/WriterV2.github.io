@@ -3,5 +3,5 @@
 {% block content %}
     <h2>{{story.title}}</h2>
     <a class="download-button" href="{{story.path_to_document}}" download>Download PDF</a>
-    <p class="story-text">{{text | safe}}</p>
+    <div class="story-text">{{text | safe}}</div>
 {% endblock content %}

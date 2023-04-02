@@ -178,21 +178,21 @@ h3 {
   color: #a29d7f;
 }
 
-.story-text {
-  padding: 3em;
+.story-text p {
+  padding: 2em;
   margin: 2em 1em;
-  border: 1px solid #333;
+  background-color: #333;
   line-height: 1.8rem;
   font-size: 0.9em;
 }
 @media screen and (min-width: 480px) {
-  .story-text {
+  .story-text p {
     line-height: 2rem;
     margin: 2em;
   }
 }
 @media screen and (min-width: 768px) {
-  .story-text {
+  .story-text p {
     line-height: 2.5rem;
     font-size: 1em;
   }
