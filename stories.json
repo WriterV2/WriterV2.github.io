@@ -14,5 +14,13 @@
         "number_of_pages": 2,
         "language": "German",
         "last_update": "2023-01-28"
+    },
+    {
+        "title": "The fallen dragons of Bavaria",
+        "description": "In his new life in Germany Kazuyuki is needed by dragons.",
+        "path_to_document": "the_fallen_dragons_of_bavaria.pdf",
+        "number_of_pages": 3,
+        "language": "English",
+        "last_update": "2023-04-02"
     }
 ]
