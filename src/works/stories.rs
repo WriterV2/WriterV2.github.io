@@ -71,29 +71,6 @@ impl Story {
 
     // extract text from pdf document
     fn get_text(&self) -> anyhow::Result<String> {
-        // TODO:
-        // - 1-2 digit number with linebreak e.g. "Es ist 10\n geworden" not usable in texts
-        // - currently only linebreaks before quotes, but not after paragraphs
-        /*
-        let mut text =
-            pdf_extract::extract_text(format!("docs/stories/{}", &self.path_to_document))?;
-
-        text = regex::Regex::new(r"\n\n»")?
-            .replace_all(&text, "<br>»")
-            .to_string();
-        text = regex::Regex::new(r"\d{1,2}?\n \d")?
-            .replace_all(&text, "")
-            .to_string();
-        text = regex::Regex::new(r"-?\d{1,2}\n")?
-            .replace_all(&text, "")
-            .to_string();
-        text = regex::Regex::new(r"-\n\n")?
-            .replace_all(&text, "")
-            .to_string();
-        text = regex::Regex::new("\n\n")?
-            .replace_all(&text, " ")
-            .to_string();
-        */
         let text = std::fs::read_to_string(format!("stories_html/{}.html", self.path_to_document.replace(".pdf", "")))?;
 
         anyhow::Ok(text).with_context(|| format!("Failed to extract text for {}", self.title))
