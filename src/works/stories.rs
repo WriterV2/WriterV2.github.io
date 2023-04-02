@@ -49,7 +49,7 @@ impl Story {
             // HTML file doesn't exist yet
             !std::path::Path::new(&self.get_html_path()).exists() 
             // pdf document changes
-            || std::fs::metadata(format!("docs/stories/{}", &self.path_to_document))?.modified()?
+            || std::fs::metadata(self.get_pdf_path())?.modified()?
                 > std::fs::metadata(self.get_html_path())?.modified()?
             // base template changes
             || std::fs::metadata("templates/base.html")?.modified()?
@@ -69,10 +69,22 @@ impl Story {
         )
     }
 
+    // get path to pdf document
+    fn get_pdf_path(&self) -> String {
+        format!("docs/stories/{}", &self.path_to_document)
+    }
+
+    // get path to html file with story content
+    fn get_content_html_path(&self) -> String {
+        format!(
+            "stories_html/{}.html",
+            self.path_to_document.replace(".pdf", "")
+        )
+    }
+
     // extract text from pdf document
     fn get_text(&self) -> anyhow::Result<String> {
-        let text = std::fs::read_to_string(format!("stories_html/{}.html", self.path_to_document.replace(".pdf", "")))?;
-
+        let text = std::fs::read_to_string(self.get_content_html_path())?;
         anyhow::Ok(text).with_context(|| format!("Failed to extract text for {}", self.title))
     }
 }
