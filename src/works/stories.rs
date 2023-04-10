@@ -13,8 +13,9 @@ struct Story {
     title: String,
     description: String,
     path_to_document: String,
-    number_of_pages: u16,
     language: Language,
+    #[serde(default)]
+    number_of_pages: u32,
     #[serde(default)]
     last_update: NaiveDate,
 }
@@ -47,6 +48,7 @@ impl super::Works for Stories {
         let mut stories: Stories = serde_json::from_reader(std::io::BufReader::new(&file))?;
         for story in stories.0.iter_mut() {
             story.get_last_modified()?;
+            story.get_pages_num()?;
         }
         // add error context
         Ok(stories)
@@ -99,7 +101,7 @@ impl Story {
         anyhow::Ok(text).with_context(|| format!("Failed to extract text for {}", self.title))
     }
 
-    // get date of last modification of pdf file
+    // get date of last modification 
     fn get_last_modified(&mut self) -> anyhow::Result<chrono::NaiveDate> {
         use std::os::linux::fs::MetadataExt;
         let pdf_last_modification = std::fs::metadata(self.get_pdf_path())?.st_mtime();
@@ -107,6 +109,13 @@ impl Story {
         let date = chrono::NaiveDateTime::from_timestamp(std::cmp::max(pdf_last_modification, html_last_modification), 0).date();
         self.last_update = date;
         Ok(date)
+    }
+
+    // get number of pages of pdf file
+    fn get_pages_num(&mut self) -> anyhow::Result<u32> {
+        let file = pdf::file::File::open(self.get_pdf_path())?;
+        self.number_of_pages = file.num_pages();
+        Ok(file.num_pages())
     }
 }
 
