@@ -15,6 +15,7 @@ struct Story {
     path_to_document: String,
     number_of_pages: u16,
     language: Language,
+    #[serde(default)]
     last_update: NaiveDate,
 }
 
@@ -39,6 +40,16 @@ impl super::Works for Stories {
             }
         }
         anyhow::Ok(()).with_context(|| "Failed to render single story pages")
+    }
+
+    // create stories from stories.json and add last modification date
+    fn new_from_file(file: std::fs::File) -> anyhow::Result<Self> {
+        let mut stories: Stories = serde_json::from_reader(std::io::BufReader::new(&file))?;
+        for story in stories.0.iter_mut() {
+            story.get_last_modified()?;
+        }
+        // add error context
+        Ok(stories)
     }
 }
 
@@ -86,6 +97,16 @@ impl Story {
     fn get_text(&self) -> anyhow::Result<String> {
         let text = std::fs::read_to_string(self.get_content_html_path())?;
         anyhow::Ok(text).with_context(|| format!("Failed to extract text for {}", self.title))
+    }
+
+    // get date of last modification of pdf file
+    fn get_last_modified(&mut self) -> anyhow::Result<chrono::NaiveDate> {
+        use std::os::linux::fs::MetadataExt;
+        let pdf_last_modification = std::fs::metadata(self.get_pdf_path())?.st_mtime();
+        let html_last_modification = std::fs::metadata(self.get_html_path())?.st_mtime();
+        let date = chrono::NaiveDateTime::from_timestamp(std::cmp::max(pdf_last_modification, html_last_modification), 0).date();
+        self.last_update = date;
+        Ok(date)
     }
 }
 
