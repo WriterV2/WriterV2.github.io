@@ -16,5 +16,11 @@
         "description": "In his new life in Germany Kazuyuki is needed by dragons.",
         "path_to_document": "the_fallen_dragons_of_bavaria.pdf",
         "language": "English"
+    },
+    {
+        "title": "Wege zum Tod",
+        "description": "Drei Lebewesen begegnen auf verschiedenen Wegen dem Tod.",
+        "path_to_document": "wege_zum_tod.pdf",
+        "language": "German"
     }
 ]

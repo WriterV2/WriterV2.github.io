@@ -16,10 +16,10 @@ fn main() -> Result<()> {
 
     // render stories.html file
     let stories = std::rc::Rc::new(works::stories::Stories::new_from_file(
-        std::fs::File::open(std::path::PathBuf::from("stories.json"))?,
+        &std::fs::File::open(std::path::PathBuf::from("stories.json"))?,
     )?);
     std::rc::Rc::clone(&stories).render_overview_page(&tera, "stories")?;
     std::rc::Rc::clone(&stories).render_single_pages(&tera, "story")?;
 
-    Ok(())
+    anyhow::Ok(())
 }

@@ -1,3 +1,5 @@
+use std::format;
+
 use anyhow::Context;
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
@@ -44,14 +46,14 @@ impl super::Works for Stories {
     }
 
     // create stories from stories.json and add last modification date
-    fn new_from_file(file: std::fs::File) -> anyhow::Result<Self> {
-        let mut stories: Stories = serde_json::from_reader(std::io::BufReader::new(&file))?;
+    fn new_from_file(file: &std::fs::File) -> anyhow::Result<Self> {
+        let mut stories: Stories = serde_json::from_reader(std::io::BufReader::new(file))?;
         for story in stories.0.iter_mut() {
             story.get_last_modified()?;
             story.get_pages_num()?;
         }
         // add error context
-        Ok(stories)
+        anyhow::Ok(stories).with_context(|| format!("Failed to create new story {:?}", file))
     }
 }
 
@@ -105,17 +107,22 @@ impl Story {
     fn get_last_modified(&mut self) -> anyhow::Result<chrono::NaiveDate> {
         use std::os::linux::fs::MetadataExt;
         let pdf_last_modification = std::fs::metadata(self.get_pdf_path())?.st_mtime();
-        let html_last_modification = std::fs::metadata(self.get_html_path())?.st_mtime();
+        let html_path = std::fs::metadata(self.get_html_path());
+        let html_last_modification = if let Ok(file) = html_path {
+            file.st_mtime()
+        } else {
+            0
+        };
         let date = chrono::NaiveDateTime::from_timestamp(std::cmp::max(pdf_last_modification, html_last_modification), 0).date();
         self.last_update = date;
-        Ok(date)
+        anyhow::Ok(date).with_context(|| format!("Failed to get last modified date for {}", self.title)) 
     }
 
     // get number of pages of pdf file
     fn get_pages_num(&mut self) -> anyhow::Result<u32> {
         let file = pdf::file::File::open(self.get_pdf_path())?;
         self.number_of_pages = file.num_pages();
-        Ok(file.num_pages())
+        anyhow::Ok(file.num_pages()).with_context(|| format!("Failed to number of pages for {}", self.title))
     }
 }
 

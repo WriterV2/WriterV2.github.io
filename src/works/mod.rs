@@ -7,8 +7,8 @@ pub mod stories;
 pub trait Works: for<'a> Deserialize<'a> + Serialize {
     // create works from the corresponding JSON file,
     // e.g. stories from stories.json
-    fn new_from_file(file: std::fs::File) -> Result<Self> {
-        serde_json::from_reader(std::io::BufReader::new(&file))
+    fn new_from_file(file: &std::fs::File) -> Result<Self> {
+        serde_json::from_reader(std::io::BufReader::new(file))
             // add error context
             .with_context(|| format!("Failed to create works from {:?}", &file))
     }
