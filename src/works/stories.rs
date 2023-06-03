@@ -1,5 +1,8 @@
-use std::fs::File;
-use std::path::PathBuf;
+use std::fs::{File, write, metadata, read_to_string};
+use std::cmp::max;
+use std::io::BufReader;
+use std::path::{PathBuf, Path};
+use std::os::linux::fs::MetadataExt;
 use anyhow::{Result, Ok, Context};
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
@@ -36,7 +39,7 @@ impl super::Works for Stories {
                 let mut context = tera::Context::new();
                 context.insert("story", story);
                 context.insert("text", &story.get_text().with_context(|| format!("Failed to get text from {}", story.title))?);
-                result.push(std::fs::write(
+                result.push(write(
                     story.get_html_path().as_str(),
                     tera_instance.render(format!("{}.html", template_name).as_str(), &context).with_context(|| format!("Failed to render single story page for {}", story.title))?,
                 ));
@@ -47,8 +50,8 @@ impl super::Works for Stories {
 
     // create stories from stories.json and add last modification date
     fn new_from_file(workname: &str) -> Result<Self> {
-        let mut stories: Self = serde_json::from_reader(std::io::BufReader::new(
-            &File::open(PathBuf::from(workname))
+        let mut stories: Self = serde_json::from_reader(BufReader::new(
+            &File::open(PathBuf::from(format!("{}.json", workname)))
                 .with_context(|| format!("Failed to open {}.json", workname))?,
         ))
         .with_context(|| format!("Failed to create works from {}.json", workname))?;
@@ -66,15 +69,15 @@ impl Story {
     fn update_available(&self) -> Result<bool> {
         Ok(
             // HTML file doesn't exist yet
-            !std::path::Path::new(&self.get_html_path()).exists() 
+            !Path::new(&self.get_html_path()).exists() 
             // pdf document changes
-            || std::fs::metadata(self.get_pdf_path()).with_context(|| format!("Failed to get PDF metadata for {}", self.title))?.modified().with_context(|| format!("Failed to get last modified date for {}'s PDF", self.title))?
-                > std::fs::metadata(self.get_html_path()).with_context(|| format!("Failed to get HTML metadata for {}", self.title))?.modified().with_context(|| format!("Failed to get last modified date for {}'s HTML", self.title))?
+            || metadata(self.get_pdf_path()).with_context(|| format!("Failed to get PDF metadata for {}", self.title))?.modified().with_context(|| format!("Failed to get last modified date for {}'s PDF", self.title))?
+                > metadata(self.get_html_path()).with_context(|| format!("Failed to get HTML metadata for {}", self.title))?.modified().with_context(|| format!("Failed to get last modified date for {}'s HTML", self.title))?
             // base template changes
-            || std::fs::metadata("templates/base.html").context("Failed to get metadata for base HTML template")?.modified().context("Failed to get last modified date for base HTML template")?
-                > std::fs::metadata(self.get_html_path()).with_context(|| format!("Failed to get HTML metadata for {}", self.title))?.modified().with_context(|| format!("Failed to get last modified date for {}'s HTML", self.title))?
+            || metadata("templates/base.html").context("Failed to get metadata for base HTML template")?.modified().context("Failed to get last modified date for base HTML template")?
+                > metadata(self.get_html_path()).with_context(|| format!("Failed to get HTML metadata for {}", self.title))?.modified().with_context(|| format!("Failed to get last modified date for {}'s HTML", self.title))?
             // story template changes
-            ||std::fs::metadata("templates/story.html").context("Failed to get metadata for story HTML template")?.modified().context("Failed to get last modified date for story HTML template")? > std::fs::metadata(self.get_html_path()).with_context(|| format!("Failed to get HTML metadata for {}", self.title))?.modified().with_context(|| format!("Failed to get last modified date for {}'s HTML", self.title))?, // add error context
+            ||metadata("templates/story.html").context("Failed to get metadata for story HTML template")?.modified().context("Failed to get last modified date for story HTML template")? > metadata(self.get_html_path()).with_context(|| format!("Failed to get HTML metadata for {}", self.title))?.modified().with_context(|| format!("Failed to get last modified date for {}'s HTML", self.title))?, // add error context
         )
     }
 
@@ -102,21 +105,20 @@ impl Story {
 
     // extract text from pdf document
     fn get_text(&self) -> Result<String> {
-        let text = std::fs::read_to_string(self.get_content_html_path()).with_context(|| format!("Failed to read {}'s content HTML file", self.title))?;
+        let text = read_to_string(self.get_content_html_path()).with_context(|| format!("Failed to read {}'s content HTML file", self.title))?;
         Ok(text)
     }
 
     // get date of last modification 
     fn get_last_modified(&mut self) -> Result<chrono::NaiveDate> {
-        use std::os::linux::fs::MetadataExt;
-        let pdf_last_modification = std::fs::metadata(self.get_pdf_path()).with_context(|| format!("Failed to get {}'s PDF", self.title))?.st_mtime();
-        let html_path = std::fs::metadata(self.get_html_path());
+        let pdf_last_modification = metadata(self.get_pdf_path()).with_context(|| format!("Failed to get {}'s PDF", self.title))?.st_mtime();
+        let html_path = metadata(self.get_html_path());
         let html_last_modification = if let core::result::Result::Ok(file) = html_path {
             file.st_mtime()
         } else {
             0
         };
-        let date = chrono::NaiveDateTime::from_timestamp(std::cmp::max(pdf_last_modification, html_last_modification), 0).date();
+        let date = chrono::NaiveDateTime::from_timestamp(max(pdf_last_modification, html_last_modification), 0).date();
         self.last_update = date;
         Ok(date)
     }

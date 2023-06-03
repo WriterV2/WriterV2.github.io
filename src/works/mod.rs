@@ -1,4 +1,5 @@
-use std::fs::File;
+use std::fs::{write, File};
+use std::io::BufReader;
 use std::path::PathBuf;
 
 use anyhow::{Context, Ok, Result};
@@ -11,8 +12,8 @@ pub trait Works: for<'a> Deserialize<'a> + Serialize {
     // create works from the corresponding JSON file,
     // e.g. stories from stories.json
     fn new_from_file(workname: &str) -> Result<Self> {
-        let work = serde_json::from_reader(std::io::BufReader::new(
-            &File::open(PathBuf::from(workname))
+        let work = serde_json::from_reader(BufReader::new(
+            &File::open(PathBuf::from(format!("{}.json", workname)))
                 .with_context(|| format!("Failed to open {}.json", workname))?,
         ))
         .with_context(|| format!("Failed to create works from {}.json", workname))?;
@@ -37,7 +38,7 @@ pub trait Works: for<'a> Deserialize<'a> + Serialize {
         tera_instance: &tera::Tera,
         filename_without_extension: &str,
     ) -> Result<Self> {
-        std::fs::write(
+        write(
             format!("docs/{}.html", filename_without_extension).as_str(),
             tera_instance
                 .render(

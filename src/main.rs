@@ -1,3 +1,5 @@
+use std::fs::write;
+
 use anyhow::{Context, Ok, Result};
 use tera::Tera;
 
@@ -14,7 +16,7 @@ fn main() -> Result<()> {
     let output = tera
         .render("index.html", &tera::Context::new())
         .context("Failed to render index.html")?;
-    std::fs::write("docs/index.html", output).context("Failed to write index.html")?;
+    write("docs/index.html", output).context("Failed to write index.html")?;
 
     // render pages for stories
     Stories::new_from_file("stories")?
