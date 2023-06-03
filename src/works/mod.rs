@@ -1,3 +1,6 @@
+use std::fs::File;
+use std::path::PathBuf;
+
 use anyhow::{Context, Ok, Result};
 use serde::{Deserialize, Serialize};
 
@@ -7,10 +10,13 @@ pub mod stories;
 pub trait Works: for<'a> Deserialize<'a> + Serialize {
     // create works from the corresponding JSON file,
     // e.g. stories from stories.json
-    fn new_from_file(file: &std::fs::File) -> Result<Self> {
-        let file = serde_json::from_reader(std::io::BufReader::new(file))
-            .with_context(|| format!("Failed to create works from {:#?}", &file))?;
-        Ok(file)
+    fn new_from_file(workname: &str) -> Result<Self> {
+        let work = serde_json::from_reader(std::io::BufReader::new(
+            &File::open(PathBuf::from(workname))
+                .with_context(|| format!("Failed to open {}.json", workname))?,
+        ))
+        .with_context(|| format!("Failed to create works from {}.json", workname))?;
+        Ok(work)
     }
 
     // crate tera context from the group of work

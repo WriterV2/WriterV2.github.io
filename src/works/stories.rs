@@ -1,3 +1,5 @@
+use std::fs::File;
+use std::path::PathBuf;
 use anyhow::{Result, Ok, Context};
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
@@ -44,8 +46,13 @@ impl super::Works for Stories {
     }
 
     // create stories from stories.json and add last modification date
-    fn new_from_file(file: &std::fs::File) -> Result<Self> {
-        let mut stories: Stories = serde_json::from_reader(std::io::BufReader::new(file)).with_context(|| format!("Failed to read JSON from {:#?}", file))?;
+    fn new_from_file(workname: &str) -> Result<Self> {
+        let mut stories: Self = serde_json::from_reader(std::io::BufReader::new(
+            &File::open(PathBuf::from(workname))
+                .with_context(|| format!("Failed to open {}.json", workname))?,
+        ))
+        .with_context(|| format!("Failed to create works from {}.json", workname))?;
+
         for story in stories.0.iter_mut() {
             story.get_last_modified().with_context(|| format!("Failed to get last modified date for {}", story.title))?;
             story.get_pages_num().with_context(|| format!("Failed to get number of pages from {}'s PDF", story.title))?;
