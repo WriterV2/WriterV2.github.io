@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::{Context, Ok, Result};
 use serde::{Deserialize, Serialize};
 
 pub mod stories;
@@ -8,17 +8,17 @@ pub trait Works: for<'a> Deserialize<'a> + Serialize {
     // create works from the corresponding JSON file,
     // e.g. stories from stories.json
     fn new_from_file(file: &std::fs::File) -> Result<Self> {
-        serde_json::from_reader(std::io::BufReader::new(file))
-            // add error context
-            .with_context(|| format!("Failed to create works from {:?}", &file))
+        let file = serde_json::from_reader(std::io::BufReader::new(file))
+            .with_context(|| format!("Failed to create works from {:#?}", &file))?;
+        Ok(file)
     }
 
     // crate tera context from the group of work
     // tera context can be accessed in HTML tera templating
-    fn create_tera_context(&self) -> Result<tera::Context> {
+    fn create_tera_context(&self) -> tera::Context {
         let mut context = tera::Context::new();
         context.insert("works", &self);
-        anyhow::Ok(context).with_context(|| "Failed to create works")
+        context
     }
 
     // render page for every work
@@ -33,17 +33,24 @@ pub trait Works: for<'a> Deserialize<'a> + Serialize {
     ) -> Result<()> {
         std::fs::write(
             format!("docs/{}.html", filename_without_extension).as_str(),
-            tera_instance.render(
-                format!("{}.html", filename_without_extension).as_str(),
-                &self.create_tera_context()?,
-            )?,
+            tera_instance
+                .render(
+                    format!("{}.html", filename_without_extension).as_str(),
+                    &self.create_tera_context(),
+                )
+                .with_context(|| {
+                    format!(
+                        "Failed rendering overview page for {}",
+                        filename_without_extension
+                    )
+                })?,
         )
-        // add error context
         .with_context(|| {
             format!(
-                "Failed to render overview page for {:?}",
+                "Failed to write overview page for {}",
                 filename_without_extension
             )
-        })
+        })?;
+        Ok(())
     }
 }
