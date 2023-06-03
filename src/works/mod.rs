@@ -22,15 +22,15 @@ pub trait Works: for<'a> Deserialize<'a> + Serialize {
     }
 
     // render page for every work
-    fn render_single_pages(&self, tera_instance: &tera::Tera, template_name: &str) -> Result<()>;
+    fn render_single_pages(self, tera_instance: &tera::Tera, template_name: &str) -> Result<Self>;
 
     // render corresponding overview HTML template
     // with its tera context
     fn render_overview_page(
-        &self,
+        self,
         tera_instance: &tera::Tera,
         filename_without_extension: &str,
-    ) -> Result<()> {
+    ) -> Result<Self> {
         std::fs::write(
             format!("docs/{}.html", filename_without_extension).as_str(),
             tera_instance
@@ -51,6 +51,6 @@ pub trait Works: for<'a> Deserialize<'a> + Serialize {
                 filename_without_extension
             )
         })?;
-        Ok(())
+        Ok(self)
     }
 }

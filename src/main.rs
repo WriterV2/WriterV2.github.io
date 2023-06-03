@@ -1,7 +1,8 @@
 use anyhow::{Context, Ok, Result};
 use tera::Tera;
 
-use crate::works::Works;
+use self::works::stories::Stories;
+use self::works::Works;
 
 mod works;
 
@@ -17,15 +18,14 @@ fn main() -> Result<()> {
     std::fs::write("docs/index.html", output).context("Failed to write index.html")?;
 
     // render stories.html file
-    let stories = std::rc::Rc::new(works::stories::Stories::new_from_file(
+    Stories::new_from_file(
         &std::fs::File::open(std::path::PathBuf::from("stories.json"))
             .context("Failed to open stories.json")?,
-    )?);
-    std::rc::Rc::clone(&stories)
-        .render_overview_page(&tera, "stories")
-        .context("Failed to render overview page for stories")?;
-    std::rc::Rc::clone(&stories)
-        .render_single_pages(&tera, "story")
-        .context("Failed to render single pages for stories")?;
+    )?
+    .render_overview_page(&tera, "stories")
+    .context("Failed to render overview page for stories")?
+    .render_single_pages(&tera, "story")
+    .context("Failed to render single pages for stories")?;
+
     Ok(())
 }

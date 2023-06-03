@@ -24,10 +24,10 @@ struct Story {
 impl super::Works for Stories {
     // render single pages for every story with the extracted text and a download button
     fn render_single_pages(
-        &self,
+        self,
         tera_instance: &tera::Tera,
         template_name: &str,
-    ) -> Result<()> {
+    ) -> Result<Self> {
         let mut result = Vec::new();
         for story in self.0.iter() {
             if story.update_available().with_context(|| format!("Failed to check for update for {}", story.title))? {
@@ -40,7 +40,7 @@ impl super::Works for Stories {
                 ));
             }
         }
-        Ok(())
+        Ok(self)
     }
 
     // create stories from stories.json and add last modification date
