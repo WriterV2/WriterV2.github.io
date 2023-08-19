@@ -1,6 +1,7 @@
-$background-color: #131313;
-$box-color: #333;
-$font-color: lightgray;
+$dark-color: #131313;
+$secondary-color: #333;    
+$light-secondary-color: #f0f0f0;
+$light-color: lightgray;
 $accent-color: #a29d7f;
 
 * {
@@ -10,14 +11,27 @@ $accent-color: #a29d7f;
     &:focus, &::selection {
         background-color: inherit;
         outline: none !important;
-        color: lighten($color: $font-color, $amount: 10);
+        @media (prefers-color-scheme: dark) {
+            color: lighten($color: $light-color, $amount: 10);
+        }
+        @media (prefers-color-scheme: light) {
+            color: darken($color: $dark-color, $amount: 10);
+        }
+
     }
     letter-spacing: 0.02em;
 }
 
 body {
-    background-color: $background-color;
-    color: $font-color;
+    @media (prefers-color-scheme: dark) {
+        background-color: $dark-color;
+        color: $light-color;
+    }
+    @media (prefers-color-scheme: light) {
+        background-color: $light-color;
+        color: $dark-color;
+    }
+
     font-family: Arial, Helvetica, sans-serif;
     line-height: 1.6;
 }
@@ -43,7 +57,13 @@ nav {
     justify-content: space-evenly;
     align-items: center;
     padding: 0em 2em;
-    background-color: $background-color;
+    @media (prefers-color-scheme: dark) {
+        background-color: $dark-color;
+    }
+    @media (prefers-color-scheme: light) {
+        background-color: $light-color;
+    }
+
 }
 
 main {
@@ -73,7 +93,13 @@ main {
 footer {
     text-align: center;
     font-size: 0.8em;
-    background-color: $box-color;
+    @media (prefers-color-scheme: dark) {
+        background-color: $secondary-color;
+    }
+    @media (prefers-color-scheme: light) {
+        background-color: $light-secondary-color;
+    }
+
 }
 
 a {
@@ -81,7 +107,13 @@ a {
     color: inherit;
     &:hover {
         border-color: $accent-color;
-        color: lighten($color: $font-color, $amount: 10);
+        @media (prefers-color-scheme: dark) {
+            color: lighten($color: $light-color, $amount: 10);
+        }
+        @media (prefers-color-scheme: light) {
+            color: darken($color: $dark-color, $amount: 10);
+        }
+
     }
 }
 
@@ -92,16 +124,29 @@ h3 {
 
 .card {
     padding: 2em;
-    background-color: $box-color;
     border-radius: 0.3em;
-    border: 1px solid $background-color;
+    @media (prefers-color-scheme: dark) {
+        background-color: $secondary-color;
+        border: 1px solid $dark-color;
+    }
+    @media (prefers-color-scheme: light) {
+        background-color: $light-secondary-color;
+        border: 1px solid $light-color;
+    }
+
     
     ul {
         list-style: none;
         li {
             padding: 0.5em;
             span {
-                background-color: $background-color;
+                @media (prefers-color-scheme: dark) {
+                    background-color: $dark-color;
+                }
+                @media (prefers-color-scheme: light) {
+                    background-color: $light-color;
+                }
+
                 padding: 0.2em;
             }
         }
@@ -115,7 +160,12 @@ h3 {
             display: flex;
             flex-flow: row wrap;
             span {
-                background-color: $background-color;
+                @media (prefers-color-scheme: dark) {
+                    background-color: $dark-color;
+                }
+                @media (prefers-color-scheme: light) {
+                    background-color: $light-color;
+                }
                 padding: 0.5em;
                 margin: 0 0.5em 0.5em;
                 font-size: 0.8em;
@@ -145,10 +195,20 @@ h3 {
     }
     label {
         margin-left: 2em;
-        color: $font-color;
+        @media (prefers-color-scheme: dark) {
+            color: $light-color;
+        }
+        @media (prefers-color-scheme: light) {
+            color: $dark-color;
+        }
     }
     select {
-        background-color: $box-color;
+        @media (prefers-color-scheme: dark) {
+            background-color: $secondary-color;
+        }
+        @media (prefers-color-scheme: light) {
+            background-color: $light-secondary-color;
+        }
         color: $accent-color;
         border: none;
         text-align: center;
@@ -159,25 +219,43 @@ h3 {
 .works-description {
     margin: 2em 1em;
     padding: 1em;
-    border: 1px solid $box-color;
     font-size: 0.9em;
+    @media (prefers-color-scheme: dark) {
+        border: 1px solid $secondary-color;
+    }
+    @media (prefers-color-scheme: light) {
+        border: 1px solid $light-secondary-color;
+    }
+
 }
 
 .download-button {
-    border: 1px solid $box-color;
     padding: 0.5em;
     margin: 0.5em 3em;
     font-size: 0.8em;
     color: $accent-color;
+    @media (prefers-color-scheme: dark) {
+        border: 1px solid $secondary-color;
+    }
+    @media (prefers-color-scheme: light) {
+        border: 1px solid $light-secondary-color;
+    }
+
 }
 
 .story-text {
     p {
         padding: 2em;
         margin: 2em 1em;
-        background-color: $box-color;
         line-height: 1.8rem;
         font-size: 0.9em;
+        @media (prefers-color-scheme: dark) {
+            background-color: $secondary-color;
+        }
+        @media (prefers-color-scheme: light) {
+            background-color: $light-secondary-color;
+        }
+
         @media screen and (min-width: 480px) {
             line-height: 2rem;
             margin: 2em;

@@ -7,14 +7,33 @@
 *:focus, *::selection {
   background-color: inherit;
   outline: none !important;
-  color: #ededed;
+}
+@media (prefers-color-scheme: dark) {
+  *:focus, *::selection {
+    color: #ededed;
+  }
+}
+@media (prefers-color-scheme: light) {
+  *:focus, *::selection {
+    color: black;
+  }
 }
 
 body {
-  background-color: #131313;
-  color: lightgray;
   font-family: Arial, Helvetica, sans-serif;
   line-height: 1.6;
+}
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #131313;
+    color: lightgray;
+  }
+}
+@media (prefers-color-scheme: light) {
+  body {
+    background-color: lightgray;
+    color: #131313;
+  }
 }
 
 header {
@@ -38,7 +57,16 @@ nav {
   justify-content: space-evenly;
   align-items: center;
   padding: 0em 2em;
-  background-color: #131313;
+}
+@media (prefers-color-scheme: dark) {
+  nav {
+    background-color: #131313;
+  }
+}
+@media (prefers-color-scheme: light) {
+  nav {
+    background-color: lightgray;
+  }
 }
 
 main {
@@ -74,7 +102,16 @@ main .about-me {
 footer {
   text-align: center;
   font-size: 0.8em;
-  background-color: #333;
+}
+@media (prefers-color-scheme: dark) {
+  footer {
+    background-color: #333;
+  }
+}
+@media (prefers-color-scheme: light) {
+  footer {
+    background-color: #f0f0f0;
+  }
 }
 
 a {
@@ -83,7 +120,16 @@ a {
 }
 a:hover {
   border-color: #a29d7f;
-  color: #ededed;
+}
+@media (prefers-color-scheme: dark) {
+  a:hover {
+    color: #ededed;
+  }
+}
+@media (prefers-color-scheme: light) {
+  a:hover {
+    color: black;
+  }
 }
 
 h3 {
@@ -93,9 +139,19 @@ h3 {
 
 .card {
   padding: 2em;
-  background-color: #333;
   border-radius: 0.3em;
-  border: 1px solid #131313;
+}
+@media (prefers-color-scheme: dark) {
+  .card {
+    background-color: #333;
+    border: 1px solid #131313;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .card {
+    background-color: #f0f0f0;
+    border: 1px solid lightgray;
+  }
 }
 .card ul {
   list-style: none;
@@ -104,8 +160,17 @@ h3 {
   padding: 0.5em;
 }
 .card ul li span {
-  background-color: #131313;
   padding: 0.2em;
+}
+@media (prefers-color-scheme: dark) {
+  .card ul li span {
+    background-color: #131313;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .card ul li span {
+    background-color: lightgray;
+  }
 }
 .card.work-card {
   display: flex;
@@ -118,10 +183,19 @@ h3 {
   flex-flow: row wrap;
 }
 .card.work-card .info span {
-  background-color: #131313;
   padding: 0.5em;
   margin: 0 0.5em 0.5em;
   font-size: 0.8em;
+}
+@media (prefers-color-scheme: dark) {
+  .card.work-card .info span {
+    background-color: #131313;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .card.work-card .info span {
+    background-color: lightgray;
+  }
 }
 .card.work-card:hover {
   border: 1px solid #a29d7f;
@@ -153,37 +227,82 @@ h3 {
 }
 .works-filter label {
   margin-left: 2em;
-  color: lightgray;
+}
+@media (prefers-color-scheme: dark) {
+  .works-filter label {
+    color: lightgray;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .works-filter label {
+    color: #131313;
+  }
 }
 .works-filter select {
-  background-color: #333;
   color: #a29d7f;
   border: none;
   text-align: center;
   padding: 0.2em;
 }
+@media (prefers-color-scheme: dark) {
+  .works-filter select {
+    background-color: #333;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .works-filter select {
+    background-color: #f0f0f0;
+  }
+}
 
 .works-description {
   margin: 2em 1em;
   padding: 1em;
-  border: 1px solid #333;
   font-size: 0.9em;
+}
+@media (prefers-color-scheme: dark) {
+  .works-description {
+    border: 1px solid #333;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .works-description {
+    border: 1px solid #f0f0f0;
+  }
 }
 
 .download-button {
-  border: 1px solid #333;
   padding: 0.5em;
   margin: 0.5em 3em;
   font-size: 0.8em;
   color: #a29d7f;
 }
+@media (prefers-color-scheme: dark) {
+  .download-button {
+    border: 1px solid #333;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .download-button {
+    border: 1px solid #f0f0f0;
+  }
+}
 
 .story-text p {
   padding: 2em;
   margin: 2em 1em;
-  background-color: #333;
   line-height: 1.8rem;
   font-size: 0.9em;
+}
+@media (prefers-color-scheme: dark) {
+  .story-text p {
+    background-color: #333;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .story-text p {
+    background-color: #f0f0f0;
+  }
 }
 @media screen and (min-width: 480px) {
   .story-text p {
