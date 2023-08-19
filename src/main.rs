@@ -6,6 +6,7 @@ use tera::Tera;
 use self::works::stories::Stories;
 use self::works::Works;
 
+mod htmlutils;
 mod works;
 
 const STORY: (&str, &str) = ("stories", "story");
