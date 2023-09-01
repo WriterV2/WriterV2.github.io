@@ -1,11 +1,13 @@
 use chrono::Datelike;
 use html::content::builders::{FooterBuilder, MainBuilder, NavigationBuilder};
-use html::content::{Footer, Header, Heading1, Navigation};
+use html::content::{Footer, Header, Heading1, Main, Navigation};
+use html::forms::{Input, Label};
 use html::inline_text::{Anchor, Underline};
 use html::metadata::builders::HeadBuilder;
 use html::metadata::{Head, Link, Meta, Title};
 use html::root::builders::HtmlBuilder;
-use html::root::Html;
+use html::root::{Body, Html};
+use html::text_content::Division;
 
 const STYLE_PATH: &str = "/style.css";
 const ICON_PATH: &str = "data:,";
@@ -21,7 +23,7 @@ fn build_html() -> HtmlBuilder {
 
 // Build an HTML head section with the provided meta information
 // (build and push to an HTML builder)
-fn build_head(keywords: &Vec<&str>, title: &str) -> HeadBuilder {
+fn build_head(keywords: Vec<&str>, title: &str) -> HeadBuilder {
     let page_title = if title.is_empty() {
         PAGE_TITLE_BASE
     } else {
@@ -65,7 +67,6 @@ fn build_navigation() -> NavigationBuilder {
     }
     navigation
 }
-
 // Build an HTML footer with an auto-updating copyright signature
 // (build and push to an HTML builder)
 fn build_footer() -> FooterBuilder {
@@ -76,16 +77,65 @@ fn build_footer() -> FooterBuilder {
 }
 
 trait GenerateHTMLGroup<T: GenerateHTMLPage> {
-    fn get_pages() -> Vec<T>;
-    fn build_overview_page() -> HtmlBuilder;
+    fn get_pages(&self) -> Vec<T>;
+    fn get_title(&self) -> &str;
+    fn get_keywords(&self) -> Vec<&str>;
+    fn build_overview_page(&self) -> HtmlBuilder {
+        // Main section
+        let mut main = Main::builder().heading_2(|h| h.push(self.get_title()));
+        let pages = self.get_pages();
+
+        // Div for content filters
+        let mut filters = Division::builder().id("filters");
+
+        // Add label and invisible checkbox for every filter without duplicates
+        let used_filters: Vec<&str> = Vec::new();
+        for page in pages.iter() {
+            for (i, f) in page.get_filters().iter().enumerate() {
+                if !used_filters.contains(f) {
+                    filters
+                        .push(
+                            Input::builder()
+                                .type_("checkbox")
+                                .id(i.to_string())
+                                .checked("true")
+                                .hidden("true")
+                                .build(),
+                        )
+                        .push(Label::builder().for_(i.to_string()).push(*f).build());
+                    used_filters.push(f);
+                }
+            }
+        }
+
+        // Add grid with an overview of the single pages
+        let mut grid = Division::builder().id("grid");
+        for page in pages.iter() {
+            // TODO: Filters
+            grid.push(Anchor::builder().href(page.get_page_name()).build())
+                .heading_3(|h| h.push(page.get_title()))
+                .paragraph(|p| p.push(page.get_description()));
+        }
+
+        main.push(filters.build()).push(grid.build());
+
+        let html = build_html().push(build_head(self.get_keywords(), &self.get_title()).build());
+        let body = Body::builder()
+            .push(build_navigation().build())
+            .push(main.build())
+            .push(build_footer().build());
+        html.push(body.build());
+        *html
+    }
 }
 
 trait GenerateHTMLPage {
     fn build_single_page_content(&self) -> Vec<MainBuilder>;
-    fn get_page_name(&self) -> String;
-    fn get_tags(&self) -> Vec<String>;
-    fn get_title(&self) -> String;
-    fn get_description(&self) -> String;
+    fn get_page_name(&self) -> &str;
+    fn get_filters(&self) -> Vec<&str>;
+    fn get_title(&self) -> &str;
+    fn get_description(&self) -> &str;
+    fn get_keywords(&self) -> Vec<&str>;
 
     fn build_header() -> Header {
         Header::builder()
@@ -103,32 +153,3 @@ trait GenerateHTMLPage {
             .build()
     }
 }
-
-// fn build_grid(title: &str, works: Vec<Work>) -> MainBuilder {
-//     let mut main = Main::builder();
-//     let header = Heading2::builder().push(title);
-//
-//     let mut filters = Division::builder().id("filters");
-//     for work in works.iter() {
-//         for (i, tag) in work.filter_tags.iter().enumerate() {
-//             filters
-//                 .push(
-//                     Input::builder()
-//                         .type_("checkbox")
-//                         .id(i.to_string())
-//                         .checked("true")
-//                         .hidden("true")
-//                         .build(),
-//                 )
-//                 .push(Label::builder().for_(i.to_string()).push(*tag).build());
-//         }
-//     }
-//
-//     let mut works_overview = Division::builder().id("works");
-//     for work in works.iter() {
-//         works_overview.push(Anchor::builder().build());
-//     }
-//
-//     main.push(header.build()).push(filters.build());
-//     main
-// }
