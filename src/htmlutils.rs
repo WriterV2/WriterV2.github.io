@@ -1,5 +1,5 @@
 use chrono::Datelike;
-use html::content::builders::{FooterBuilder, MainBuilder, NavigationBuilder};
+use html::content::builders::{FooterBuilder, HeaderBuilder, MainBuilder, NavigationBuilder};
 use html::content::{Footer, Header, Heading1, Main, Navigation};
 use html::forms::{Input, Label};
 use html::inline_text::{Anchor, Underline};
@@ -67,6 +67,24 @@ fn build_navigation() -> NavigationBuilder {
     }
     navigation
 }
+
+// Build HTML header
+// (build and push to an HTML builder)
+fn build_header() -> HeaderBuilder {
+    *Header::builder()
+        .push(
+            Underline::builder()
+                .push(
+                    Anchor::builder()
+                        .href(ROUTES[0][1])
+                        .push(Heading1::builder().push("Writer V2").build())
+                        .build(),
+                )
+                .build(),
+        )
+        .push("Vithuran Vishnuthas")
+}
+
 // Build an HTML footer with an auto-updating copyright signature
 // (build and push to an HTML builder)
 fn build_footer() -> FooterBuilder {
@@ -133,6 +151,7 @@ trait GenerateHTMLGroup<T: GenerateHTMLPage> {
 
         // Add the built main section to the body inbetween the navigation and footer
         let body = Body::builder()
+            .push(build_header().build())
             .push(build_navigation().build())
             .push(main.build())
             .push(build_footer().build());
@@ -151,20 +170,4 @@ trait GenerateHTMLPage {
     fn get_title(&self) -> &str;
     fn get_description(&self) -> &str;
     fn get_keywords(&self) -> Vec<&str>;
-
-    fn build_header() -> Header {
-        Header::builder()
-            .push(
-                Underline::builder()
-                    .push(
-                        Anchor::builder()
-                            .href(ROUTES[0][1])
-                            .push(Heading1::builder().push("Writer V2").build())
-                            .build(),
-                    )
-                    .build(),
-            )
-            .push("Vithuran Vishnuthas")
-            .build()
-    }
 }
