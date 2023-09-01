@@ -81,51 +81,66 @@ trait GenerateHTMLGroup<T: GenerateHTMLPage> {
     fn get_title(&self) -> &str;
     fn get_keywords(&self) -> Vec<&str>;
     fn build_overview_page(&self) -> HtmlBuilder {
-        // Main section
+        // Main section - root for structure built in this method
         let mut main = Main::builder().heading_2(|h| h.push(self.get_title()));
         let pages = self.get_pages();
 
-        // Div for content filters
-        let mut filters = Division::builder().id("filters");
+        // labels for the grid filters
+        let mut filters_div = Division::builder().id("filters");
+
+        // hidden checkboxes for grid filters
+        let mut filters_checkboxes = Division::builder().id("filters-checkboxes");
+
+        // Add grid with an overview of the single pages
+        let mut grid_div = Division::builder().id("grid");
 
         // Add label and invisible checkbox for every filter without duplicates
         let used_filters: Vec<&str> = Vec::new();
         for page in pages.iter() {
+            // Add page card with the link to the page
+            let anchor = Anchor::builder().href(page.get_page_name());
             for (i, f) in page.get_filters().iter().enumerate() {
                 if !used_filters.contains(f) {
-                    filters
-                        .push(
-                            Input::builder()
-                                .type_("checkbox")
-                                .id(i.to_string())
-                                .checked("true")
-                                .hidden("true")
-                                .build(),
-                        )
-                        .push(Label::builder().for_(i.to_string()).push(*f).build());
+                    // Add checkbox for filter
+                    filters_checkboxes.push(
+                        Input::builder()
+                            .type_("checkbox")
+                            .id(i.to_string())
+                            .checked("true")
+                            .hidden("true")
+                            .build(),
+                    );
+                    // Add label for filter
+                    filters_div.push(Label::builder().for_(i.to_string()).push(*f).build());
+                    // Add data indentifier to page card
+                    anchor.data(i.to_string(), "");
                     used_filters.push(f);
                 }
             }
-        }
-
-        // Add grid with an overview of the single pages
-        let mut grid = Division::builder().id("grid");
-        for page in pages.iter() {
-            // TODO: Filters
-            grid.push(Anchor::builder().href(page.get_page_name()).build())
+            // Add title and description to page card
+            anchor
                 .heading_3(|h| h.push(page.get_title()))
                 .paragraph(|p| p.push(page.get_description()));
+            // Add page card to grid
+            grid_div.push(anchor.build());
         }
 
-        main.push(filters.build()).push(grid.build());
+        // Add filter checkboxes, filter labels and the page cards to the main
+        // section
+        main.push(filters_checkboxes.build())
+            .push(filters_div.build())
+            .push(grid_div.build());
 
-        let html = build_html().push(build_head(self.get_keywords(), &self.get_title()).build());
+        // Add the built main section to the body inbetween the navigation and footer
         let body = Body::builder()
             .push(build_navigation().build())
             .push(main.build())
             .push(build_footer().build());
-        html.push(body.build());
-        *html
+
+        // Add body to main HTML handler after head
+        *build_html()
+            .push(build_head(self.get_keywords(), &self.get_title()).build())
+            .push(body.build())
     }
 }
 
