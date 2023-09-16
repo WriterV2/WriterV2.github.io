@@ -125,9 +125,10 @@ impl Story {
 
     // get number of pages of pdf file
     fn get_pages_num(&mut self) -> Result<u32> {
-        let file = pdf::file::File::open(self.get_pdf_path()).with_context(|| format!("Failed to get {}'s PDF", self.title))?;
-        self.number_of_pages = file.num_pages();
-        Ok(file.num_pages())
+//        let file = pdf::file::File::open(self.get_pdf_path()).with_context(|| format!("Failed to get {}'s PDF", self.title))?;
+//        self.number_of_pages = file.num_pages();
+//        Ok(file.num_pages())
+        Ok(1)
     }
 }
 

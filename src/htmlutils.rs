@@ -1,11 +1,9 @@
 use chrono::Datelike;
-use html::content::builders::{FooterBuilder, HeaderBuilder, MainBuilder, NavigationBuilder};
+use html::content::builders::MainBuilder;
 use html::content::{Footer, Header, Heading1, Main, Navigation};
 use html::forms::{Input, Label};
 use html::inline_text::{Anchor, Underline};
-use html::metadata::builders::HeadBuilder;
 use html::metadata::{Head, Link, Meta, Title};
-use html::root::builders::HtmlBuilder;
 use html::root::{Body, Html};
 use html::text_content::Division;
 
@@ -13,40 +11,42 @@ const STYLE_PATH: &str = "/style.css";
 const ICON_PATH: &str = "data:,";
 const PAGE_TITLE_BASE: &str = "Vithuran Vishnuthas";
 // TODO: get routes dynamically
-const ROUTES: Vec<Vec<&str>> = vec![vec!["Home", "/"]];
+const ROUTES: [[&str; 2]; 1] = [["Home", "/"]];
 
 // Build an HTML page with the given main section, page SEO keywords, page title and the base
 // elements (head, navigation, header, footer)
-pub fn build_html_page(main: &MainBuilder, keywords: Vec<&str>, title: &str) -> HtmlBuilder {
-    *Html::builder()
-        .push(build_head(keywords, title).build())
+pub fn build_html_page(main: &mut MainBuilder, keywords: Vec<String>, title: &str) -> Html {
+    Html::builder()
+        .push(build_head(keywords, title))
         .push(
             Body::builder()
-                .push(build_header().build())
-                .push(build_navigation().build())
+                .push(build_header())
+                .push(build_navigation())
                 .push(main.build())
-                .push(build_footer().build())
+                .push(build_footer())
                 .build(),
         )
+        .build()
 }
 
 // Build an HTML head section with the provided meta information
-fn build_head(keywords: Vec<&str>, title: &str) -> HeadBuilder {
+fn build_head(keywords: Vec<String>, title: &str) -> Head {
     let page_title = if title.is_empty() {
-        PAGE_TITLE_BASE
+        String::from(PAGE_TITLE_BASE)
     } else {
-        &format!("{} - {}", PAGE_TITLE_BASE, title)
+        format!("{} - {}", PAGE_TITLE_BASE, &title)
     };
 
-    let keywords_meta = Meta::builder().name("keywords");
+    let mut keywords_meta = Meta::builder();
+    keywords_meta.name("keywords");
     let mut content = String::new();
     for keyword in keywords.iter() {
         content += &format!("{},", keyword);
     }
-    content.trim_end_matches(",");
+    let _ = content.trim_end_matches(',');
     keywords_meta.content(content);
 
-    *Head::builder()
+    Head::builder()
         .push(Title::builder().title(page_title).build())
         .push(Meta::builder().charset("UTF-8").build())
         .push(
@@ -64,20 +64,21 @@ fn build_head(keywords: Vec<&str>, title: &str) -> HeadBuilder {
         )
         .push(Link::builder().rel("stylesheet").href(STYLE_PATH).build())
         .push(Link::builder().rel("icon").href(ICON_PATH).build())
+        .build()
 }
 
 // Build an HTML navigation with the provided links
-fn build_navigation() -> NavigationBuilder {
+fn build_navigation() -> Navigation {
     let mut navigation = Navigation::builder();
     for pair in ROUTES.iter() {
         navigation.push(Anchor::builder().href(pair[1]).push(pair[0]).build());
     }
-    navigation
+    navigation.build()
 }
 
 // Build HTML header
-fn build_header() -> HeaderBuilder {
-    *Header::builder()
+fn build_header() -> Header {
+    Header::builder()
         .push(
             Underline::builder()
                 .push(
@@ -89,43 +90,52 @@ fn build_header() -> HeaderBuilder {
                 .build(),
         )
         .push("Vithuran Vishnuthas")
+        .build()
 }
 
 // Build an HTML footer with an auto-updating copyright signature
-fn build_footer() -> FooterBuilder {
-    *Footer::builder().push(format!(
-        "Vithuran Vishnuthas &copy; 2022 - {}",
-        chrono::Utc::now().year()
-    ))
+fn build_footer() -> Footer {
+    Footer::builder()
+        .push(format!(
+            "Vithuran Vishnuthas &copy; 2022 - {}",
+            chrono::Utc::now().year()
+        ))
+        .build()
 }
 
 pub trait GenerateHTMLGroup<T: GenerateHTMLPage> {
     fn get_pages(&self) -> Vec<T>;
-    fn get_title(&self) -> &str;
-    fn get_keywords(&self) -> Vec<&str>;
+    fn get_title(&self) -> String;
+    fn get_keywords(&self) -> Vec<String>;
 
     // Build an overview page with all pages in this group in a grid and filters section
-    fn build_overview_page(&self) -> HtmlBuilder {
+    fn build_overview_page(&self) -> Html {
         // Main section with the group title - root for structure built in this method
-        let mut main = Main::builder().heading_2(|h| h.push(self.get_title()));
+        let mut main = Main::builder();
+
+        main.heading_2(|h| h.push(self.get_title().clone()));
 
         // Get all pages in this group
         let pages = self.get_pages();
 
         // Labels for the grid filters
-        let mut filters_div = Division::builder().id("filters");
+        let mut filters_div = Division::builder();
+        filters_div.id("filters");
 
         // Hidden checkboxes for grid filters
-        let mut filters_checkboxes = Division::builder().id("filters-checkboxes");
+        let mut filters_checkboxes = Division::builder();
+        filters_checkboxes.id("filters-checkboxes");
 
         // Add grid with an overview of the single pages
-        let mut grid_div = Division::builder().id("grid");
+        let mut grid_div = Division::builder();
+        grid_div.id("grid");
 
         // Add label and invisible checkbox for every filter without duplicates
-        let used_filters: Vec<&str> = Vec::new();
+        let mut used_filters: Vec<String> = Vec::new();
         for page in pages.iter() {
             // Add page card with the link to the page
-            let anchor = Anchor::builder().href(page.get_page_name());
+            let mut anchor = Anchor::builder();
+            anchor.href(page.get_page_name());
             for (i, f) in page.get_filters().iter().enumerate() {
                 if !used_filters.contains(f) {
                     // Add checkbox for filter
@@ -138,10 +148,15 @@ pub trait GenerateHTMLGroup<T: GenerateHTMLPage> {
                             .build(),
                     );
                     // Add label for filter
-                    filters_div.push(Label::builder().for_(i.to_string()).push(*f).build());
+                    filters_div.push(
+                        Label::builder()
+                            .for_(i.to_string())
+                            .push(f.to_string())
+                            .build(),
+                    );
                     // Add data indentifier to page card
                     anchor.data(i.to_string(), "");
-                    used_filters.push(f);
+                    used_filters.push(f.to_string());
                 }
             }
             // Add title and description to page card
@@ -158,22 +173,15 @@ pub trait GenerateHTMLGroup<T: GenerateHTMLPage> {
             .push(filters_div.build())
             .push(grid_div.build());
 
-        // Add the built main section to the body inbetween the navigation and footer
-        let body = Body::builder()
-            .push(build_header().build())
-            .push(build_navigation().build())
-            .push(main.build())
-            .push(build_footer().build());
-
-        build_html_page(main, self.get_keywords(), &self.get_title())
+        build_html_page(&mut main, self.get_keywords(), &self.get_title())
     }
 }
 
-trait GenerateHTMLPage {
+pub trait GenerateHTMLPage {
     fn build_single_page_content(&self) -> Vec<MainBuilder>;
-    fn get_page_name(&self) -> &str;
-    fn get_filters(&self) -> Vec<&str>;
-    fn get_title(&self) -> &str;
-    fn get_description(&self) -> &str;
-    fn get_keywords(&self) -> Vec<&str>;
+    fn get_page_name(&self) -> String;
+    fn get_filters(&self) -> Vec<String>;
+    fn get_title(&self) -> String;
+    fn get_description(&self) -> String;
+    fn get_keywords(&self) -> Vec<String>;
 }
