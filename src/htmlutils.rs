@@ -175,10 +175,25 @@ pub trait GenerateHTMLGroup<T: GenerateHTMLPage> {
 
         build_html_page(&mut main, self.get_keywords(), &self.get_title())
     }
+
+    fn build_single_pages(&self) -> Vec<Html> {
+        // Get all pages in this group
+        let pages = self.get_pages();
+        let mut results: Vec<Html> = Vec::new();
+
+        for page in pages.iter() {
+            results.push(build_html_page(
+                &mut page.build_single_page_content(),
+                page.get_keywords(),
+                &page.get_title(),
+            ));
+        }
+        results
+    }
 }
 
 pub trait GenerateHTMLPage {
-    fn build_single_page_content(&self) -> Vec<MainBuilder>;
+    fn build_single_page_content(&self) -> MainBuilder;
     fn get_page_name(&self) -> String;
     fn get_filters(&self) -> Vec<String>;
     fn get_title(&self) -> String;
