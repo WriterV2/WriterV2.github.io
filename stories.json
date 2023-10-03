@@ -22,5 +22,11 @@
         "description": "Drei Lebewesen begegnen auf verschiedenen Wegen dem Tod.",
         "path_to_document": "wege_zum_tod.pdf",
         "language": "German"
+    },
+    {
+        "title": "Aufbruch und Abbruch",
+        "description": "Ein frischer Absolvent muss sich vor der ersten Quest nur noch bei der Gilde für Heilkünstler anmelden.",
+        "path_to_document": "aufbruch_und_abbruch.pdf",
+        "language": "German"
     }
 ]
