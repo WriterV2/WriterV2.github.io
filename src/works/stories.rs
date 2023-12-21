@@ -118,7 +118,11 @@ impl Story {
         } else {
             0
         };
-        let date = chrono::NaiveDateTime::from_timestamp(max(pdf_last_modification, html_last_modification), 0).date();
+        let date = if let Some(d) = chrono::NaiveDateTime::from_timestamp_opt(max(pdf_last_modification, html_last_modification), 0) {
+            d.date()
+        } else {
+            chrono::NaiveDate::default()
+        };
         self.last_update = date;
         Ok(date)
     }
