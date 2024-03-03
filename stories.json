@@ -28,5 +28,11 @@
         "description": "Ein frischer Absolvent muss sich vor der ersten Quest nur noch bei der Gilde für Heilkünstler anmelden.",
         "path_to_document": "aufbruch_und_abbruch.pdf",
         "language": "German"
+    },
+    {
+        "title": "Willensfreiheit in Ketten",
+        "description": "Nach der Flucht seines Bruders, verzweifelt Fahim an der Existenz der Willensfreiheit.",
+        "path_to_document": "willensfreiheit_in_ketten.pdf",
+        "language": "German"
     }
 ]
