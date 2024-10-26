@@ -9,6 +9,8 @@ use maud::{html, Markup, DOCTYPE};
 use sqlx::sqlite::SqlitePoolOptions;
 use tower_http::services::ServeDir;
 
+mod db;
+
 struct AppError(anyhow::Error);
 
 impl IntoResponse for AppError {
