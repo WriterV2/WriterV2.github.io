@@ -42,21 +42,23 @@ async fn main() {
 async fn home() -> Result<impl IntoResponse, AppError> {
     Ok(html!({
         (head("Home"))
-        body class="bg-neutral-50 text-neutral-950 dark:bg-neutral-950 dark:text-neutral-50 font-sans text-base tracking-wide" {
+        body class="bg-[#eae3d2] text-[#333] dark:bg-[#333] dark:text-[#eae3d2] font-mono text-base tracking-wide" {
             (header_with_navbar())
         }
     }))
 }
 
 fn header_with_navbar() -> Markup {
-    html!({ header  { 
-            navbar class="p-3 text-sm bg-neutral-100 dark:bg-neutral-900 flex flex-row flex-wrap content-center justify-around decoration-purple-500 border-b-2 border-neutral-200 dark:border-neutral-800" {
-            a class="hover:underline" href="/" { "Home" }
-            a class="hover:underline" href="/" { "Stories" } 
-            a class="hover:underline" href="/" { "Tools" } 
-            a class="hover:underline" href="/" { "Games" } 
+    html!({
+        header {
+            navbar class="p-3 text-sm flex flex-row flex-wrap content-center justify-around decoration-purple-500 shadow" {
+                a class="hover:underline" href="/" { "Home" }
+                a class="hover:underline" href="/" { "Stories" }
+                a class="hover:underline" href="/" { "Tools" }
+                a class="hover:underline" href="/" { "Games" }
+            }
         }
-    } })
+    })
 }
 
 fn head(page_title: &str) -> Markup {
