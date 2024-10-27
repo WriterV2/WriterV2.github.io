@@ -1166,9 +1166,11 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "axum",
+ "dotenvy",
  "maud",
  "serde",
  "sqlx",
+ "subtle",
  "tokio",
  "tower-http",
 ]

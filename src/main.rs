@@ -1,12 +1,15 @@
 use std::env;
 
-use axum::extract::DefaultBodyLimit;
-use axum::http::StatusCode;
-use axum::response::IntoResponse;
+use axum::extract::{DefaultBodyLimit, Request};
+use axum::http::{HeaderMap, StatusCode};
+use axum::middleware::Next;
+use axum::response::{IntoResponse, Response};
 use axum::routing::get;
-use axum::Router;
+use axum::{middleware, Router};
+use dotenvy::dotenv;
 use maud::{html, Markup, DOCTYPE};
 use sqlx::sqlite::SqlitePoolOptions;
+use subtle::ConstantTimeEq;
 use tower_http::services::ServeDir;
 
 mod db;
@@ -34,6 +37,7 @@ where
 
 #[tokio::main]
 async fn main() {
+    dotenv().ok();
     let pool = SqlitePoolOptions::new()
         .connect(
             &env::var("DATABASE_URL").expect("Failed to get environment variable DATABASE_URL"),
@@ -47,6 +51,8 @@ async fn main() {
         .expect("Failed to run migrations");
 
     let app = Router::new()
+        .route("/admin", get(admin_handler))
+        .layer(middleware::from_fn(admin_middleware))
         .route("/", get(home))
         .nest_service("/static", ServeDir::new("src/static"))
         .layer(DefaultBodyLimit::max(10000));
@@ -54,6 +60,38 @@ async fn main() {
     axum::serve(listener, app.into_make_service())
         .await
         .unwrap();
+}
+
+async fn admin_middleware(
+    headers: HeaderMap,
+    request: Request,
+    next: Next,
+) -> Result<Response, StatusCode> {
+    let expected_token = env::var("TOKEN").map_err(|_| {
+        eprintln!("Error: TOKEN environment variable is not set");
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
+
+    let token = headers
+        .get("X-Admin-Token")
+        .and_then(|header| header.to_str().ok())
+        .ok_or(StatusCode::UNAUTHORIZED)?;
+
+    if !expected_token
+        .as_bytes()
+        .ct_eq(token.as_bytes())
+        .unwrap_u8()
+        == 1
+    {
+        eprintln!("Warning: Unauthorized access attempt with invalid token");
+        return Err(StatusCode::UNAUTHORIZED);
+    }
+
+    Ok(next.run(request).await)
+}
+
+async fn admin_handler() -> &'static str {
+    "Hello World"
 }
 
 async fn home() -> Result<impl IntoResponse, AppError> {
