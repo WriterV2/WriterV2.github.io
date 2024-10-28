@@ -3,7 +3,7 @@ use std::env;
 use dotenvy::dotenv;
 use sqlx::sqlite::SqlitePoolOptions;
 
-mod db;
+pub mod db;
 mod error;
 mod handlers;
 

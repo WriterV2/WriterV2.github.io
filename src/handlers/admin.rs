@@ -1,10 +1,20 @@
+use std::collections::HashMap;
 use std::env;
 
-use axum::extract::Request;
+use anyhow::Context;
+use axum::body::Bytes;
+use axum::extract::{Multipart, Request};
 use axum::http::{HeaderMap, StatusCode};
 use axum::middleware::Next;
-use axum::response::Response;
+use axum::response::{IntoResponse, Response};
+use axum::{Extension, Json};
 use subtle::ConstantTimeEq;
+
+use crate::db::product::Product;
+use crate::db::story::Story;
+use crate::error::AppError;
+
+use super::ApiContext;
 
 pub async fn admin_middleware(
     headers: HeaderMap,
@@ -21,9 +31,9 @@ pub async fn admin_middleware(
         .and_then(|header| header.to_str().ok())
         .ok_or(StatusCode::UNAUTHORIZED)?;
 
-    if !expected_token
+    if expected_token
         .as_bytes()
-        .ct_eq(token.as_bytes())
+        .ct_ne(token.as_bytes())
         .unwrap_u8()
         == 1
     {
@@ -34,6 +44,76 @@ pub async fn admin_middleware(
     Ok(next.run(request).await)
 }
 
-pub async fn admin_handler() -> &'static str {
-    "Hello World"
+pub async fn admin_healthcheck() -> impl IntoResponse {
+    StatusCode::OK
+}
+
+pub async fn upload_story(
+    ctx: Extension<ApiContext>,
+    mut multipart: Multipart,
+) -> Result<impl IntoResponse, AppError> {
+    let mut form: HashMap<String, Bytes> = HashMap::new();
+    while let Some(field) = multipart.next_field().await? {
+        if let Some(label) = field.name() {
+            form.insert(label.to_string(), field.bytes().await?);
+        }
+    }
+
+    let name = if let Some(name_value) = form.get("name") {
+        String::from_utf8(name_value.to_vec()).with_context(|| "Failed to parse name")?
+    } else {
+        return Ok(StatusCode::BAD_REQUEST.into_response());
+    };
+
+    let description = if let Some(description_value) = form.get("description") {
+        String::from_utf8(description_value.to_vec())
+            .with_context(|| "Failed to parse description")?
+    } else {
+        return Ok(StatusCode::BAD_REQUEST.into_response());
+    };
+
+    let language = if let Some(language_value) = form.get("language") {
+        String::from_utf8(language_value.to_vec()).with_context(|| "Failed to parse language")?
+    } else {
+        return Ok(StatusCode::BAD_REQUEST.into_response());
+    };
+
+    let pdf = if let Some(pdf_value) = form.get("pdf") {
+        pdf_value.to_vec()
+    } else {
+        return Ok(StatusCode::BAD_REQUEST.into_response());
+    };
+
+    let epub = if let Some(epub_value) = form.get("epub") {
+        epub_value.to_vec()
+    } else {
+        return Ok(StatusCode::BAD_REQUEST.into_response());
+    };
+
+    let time = std::time::SystemTime::now();
+    let uploaddate = time.duration_since(std::time::UNIX_EPOCH)?.as_millis() as i64;
+
+    let mut tx = ctx.pool.begin().await?;
+    let product = sqlx::query_as!(
+        Product, 
+        "INSERT INTO product (name, description, uploaddate, updatedate) VALUES ($1, $2, $3, $4) RETURNING id, name, description, uploaddate, updatedate", 
+        name, 
+        description,
+        uploaddate,
+        uploaddate)
+        .fetch_one(&mut *tx)
+        .await?;
+
+    let story = sqlx::query_as!(
+        Story,
+        "INSERT INTO story (language, pdf, epub, pid) VALUES ($1, $2, $3, $4) RETURNING id, language, pdf, epub, pid", language,
+        pdf,
+        epub,
+        product.id)
+        .fetch_one(&mut *tx)
+        .await?;
+
+    tx.commit().await?;
+
+    Ok((StatusCode::CREATED, Json(story)).into_response())
 }
