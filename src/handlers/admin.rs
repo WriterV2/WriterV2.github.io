@@ -10,8 +10,8 @@ use axum::response::{IntoResponse, Response};
 use axum::{Extension, Json};
 use subtle::ConstantTimeEq;
 
-use crate::db::product::Product;
 use crate::db::story::Story;
+use crate::db::ProductDatabaseHandler;
 use crate::error::AppError;
 
 use super::ApiContext;
@@ -90,30 +90,14 @@ pub async fn upload_story(
         return Ok(StatusCode::BAD_REQUEST.into_response());
     };
 
-    let time = std::time::SystemTime::now();
-    let uploaddate = time.duration_since(std::time::UNIX_EPOCH)?.as_millis() as i64;
-
-    let mut tx = ctx.pool.begin().await?;
-    let product = sqlx::query_as!(
-        Product, 
-        "INSERT INTO product (name, description, uploaddate, updatedate) VALUES ($1, $2, $3, $4) RETURNING id, name, description, uploaddate, updatedate", 
-        name, 
-        description,
-        uploaddate,
-        uploaddate)
-        .fetch_one(&mut *tx)
-        .await?;
-
-    let story = sqlx::query_as!(
-        Story,
-        "INSERT INTO story (language, pdf, epub, pid) VALUES ($1, $2, $3, $4) RETURNING id, language, pdf, epub, pid", language,
+    let story_template = Story {
+        id: 0,
+        pid: 0,
+        language,
         pdf,
         epub,
-        product.id)
-        .fetch_one(&mut *tx)
-        .await?;
+    };
 
-    tx.commit().await?;
-
+    let story = story_template.post(&ctx.pool, name, description).await?;
     Ok((StatusCode::CREATED, Json(story)).into_response())
 }

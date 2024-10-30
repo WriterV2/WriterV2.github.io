@@ -13,8 +13,17 @@ pub mod tool;
 pub mod tooltag;
 
 #[async_trait]
-pub trait DatabaseHandler {
+pub trait ProductDatabaseHandler {
     async fn get_all(pool: SqlitePool) -> Result<Vec<Self>, AppError>
+    where
+        Self: Sized;
+
+    async fn post(
+        &self,
+        pool: &SqlitePool,
+        name: String,
+        description: String,
+    ) -> Result<Self, AppError>
     where
         Self: Sized;
 }
