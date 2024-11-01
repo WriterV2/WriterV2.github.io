@@ -4,6 +4,7 @@ use sqlx::SqlitePool;
 use crate::error::AppError;
 use crate::db::product::Product;
 
+use super::product::ProductMarker;
 use super::ProductDatabaseHandler;
 
 
@@ -15,6 +16,8 @@ pub struct Story {
     pub epub: Vec<u8>,
     pub pid: i64,
 }
+
+impl ProductMarker for Story {}
 
 #[async_trait]
 impl ProductDatabaseHandler for Story {

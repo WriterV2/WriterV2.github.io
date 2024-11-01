@@ -6,3 +6,5 @@ pub struct Product {
     pub uploaddate: i64,
     pub updatedate: i64,
 }
+
+pub trait ProductMarker {}
