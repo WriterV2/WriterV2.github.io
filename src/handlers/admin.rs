@@ -1,30 +1,43 @@
 use std::collections::HashMap;
-use std::env;
 
 use anyhow::Context;
 use axum::body::Bytes;
-use axum::extract::{Multipart, Request};
+use axum::extract::{Multipart, Request, State};
 use axum::http::{HeaderMap, StatusCode};
 use axum::middleware::Next;
 use axum::response::{IntoResponse, Response};
 use axum::{Extension, Json};
+use rand::Rng;
 use subtle::ConstantTimeEq;
 
 use crate::db::story::Story;
 use crate::db::ProductDatabaseHandler;
 use crate::error::AppError;
 
-use super::ApiContext;
+use super::{ApiContext, AppState};
+
+pub fn generate_token() -> String {
+    const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
+                            abcdefghijklmnopqrstuvwxyz\
+                            0123456789)(*&^%$#@!~";
+    let mut rng = rand::thread_rng();
+    let token: String = (0..32)
+        .map(|_| {
+            let idx = rng.gen_range(0..CHARSET.len());
+            CHARSET[idx] as char
+        })
+        .collect();
+    println!("New Token generated: {}", token);
+    token
+}
 
 pub async fn admin_middleware(
+    State(state): State<AppState>,
     headers: HeaderMap,
     request: Request,
     next: Next,
 ) -> Result<Response, StatusCode> {
-    let expected_token = env::var("TOKEN").map_err(|_| {
-        eprintln!("Error: TOKEN environment variable is not set");
-        StatusCode::INTERNAL_SERVER_ERROR
-    })?;
+    let mut expected_token = state.admin_token.lock().await;
 
     let token = headers
         .get("X-Admin-Token")
@@ -38,8 +51,10 @@ pub async fn admin_middleware(
         == 1
     {
         eprintln!("Warning: Unauthorized access attempt with invalid token");
+        *expected_token = generate_token();
         return Err(StatusCode::UNAUTHORIZED);
     }
+    *expected_token = generate_token();
 
     Ok(next.run(request).await)
 }
