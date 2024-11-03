@@ -12,13 +12,15 @@ use tower_http::services::ServeDir;
 use admin::{admin_healthcheck, admin_middleware, generate_token, upload_story};
 use frontend_builder::home;
 
-use self::frontend_builder::{build_page, DummyProduct};
+use crate::db::story::Story;
+
+use self::frontend_builder::build_page;
 
 mod admin;
-mod frontend_builder;
+pub mod frontend_builder;
 
 #[derive(Debug, Clone)]
-struct ApiContext {
+pub struct ApiContext {
     pool: SqlitePool,
 }
 
@@ -41,7 +43,7 @@ pub async fn router(pool: SqlitePool) -> Router {
         ))
         .with_state(state)
         .route("/", get(home))
-        .route("/stories", get(build_page::<DummyProduct>))
+        .route("/stories", get(build_page::<Story>))
         .nest_service("/static", ServeDir::new("static"))
         .layer(DefaultBodyLimit::max(1074000000))
         .layer(AddExtensionLayer::new(ApiContext { pool }))

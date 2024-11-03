@@ -1,8 +1,10 @@
 use axum::async_trait;
+use maud::html;
 use sqlx::SqlitePool;
 
 use crate::error::AppError;
 use crate::db::product::Product;
+use crate::handlers::frontend_builder::PageBuilder;
 
 use super::product::ProductMarker;
 use super::ProductDatabaseHandler;
@@ -17,16 +19,20 @@ pub struct Story {
     pub pid: i64,
 }
 
-impl ProductMarker for Story {}
+impl ProductMarker for Story {
+    fn product_id(&self) -> i64 {
+        self.pid
+    }
+}
 
 #[async_trait]
 impl ProductDatabaseHandler for Story {
-    async fn get_all(pool: SqlitePool) -> Result<Vec<Self>, AppError>
+    async fn get_all(pool: &SqlitePool) -> Result<Vec<Self>, AppError>
     where
         Self: Sized,
     {
         Ok(sqlx::query_as!(Story, "SELECT * FROM story")
-            .fetch_all(&pool)
+            .fetch_all(pool)
             .await?)
     }
 
@@ -62,4 +68,18 @@ impl ProductDatabaseHandler for Story {
 
         Ok(story)
     }
+}
+
+impl PageBuilder for Story {
+   fn page_title() -> String {
+        "Stories".to_string()
+    } 
+
+   // TODO: Add pdf and epub download link + language info
+   fn product_specific_card_content(&self) -> maud::Markup {
+       html!(
+           span {
+           }
+       )
+   }
 }

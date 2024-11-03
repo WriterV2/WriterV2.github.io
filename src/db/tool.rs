@@ -7,4 +7,8 @@ pub struct Tool {
     pub pid: i64,
 }
 
-impl ProductMarker for Tool {}
+impl ProductMarker for Tool {
+    fn product_id(&self) -> i64 {
+        self.id
+    }
+}

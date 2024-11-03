@@ -1,7 +1,9 @@
 use axum::response::IntoResponse;
+use axum::Extension;
 use maud::{html, Markup, DOCTYPE};
 
-use crate::db::product::{Product, ProductMarker};
+use crate::db::product::{get_all_specificproducts, ProductMarker, SpecificProduct};
+use crate::db::ProductDatabaseHandler;
 use crate::error::AppError;
 
 pub async fn home() -> Result<impl IntoResponse, AppError> {
@@ -64,7 +66,7 @@ fn card<T: PageBuilder + ProductMarker>(specific_product: SpecificProduct<T>) ->
                 (specific_product.product.description)
             }
             div {
-                (specific_product.specific.product_specific_card_content())
+                (specific_product.detail.product_specific_card_content())
             }
             div class="flex flex-row space-x-5 mt-9 text-xs" {
                 span {"Update: " (specific_product.product.updatedate)}
@@ -85,105 +87,21 @@ fn head(page_title: String) -> Markup {
     }
 }
 
-pub async fn build_page<T: Sized + ProductMarker + PageBuilder>(
+pub async fn build_page<T: Sized + ProductMarker + PageBuilder + ProductDatabaseHandler>(
+    ctx: Extension<super::ApiContext>,
 ) -> Result<impl IntoResponse, AppError> {
     Ok(html!(
-        (page(T::page_title(), cards(T::products(), T::page_title())))
+        (page(
+            T::page_title(),
+            cards(
+                get_all_specificproducts::<T>(&ctx.pool).await?,
+                T::page_title()
+            )
+        ))
     ))
 }
 
 pub trait PageBuilder {
     fn page_title() -> String;
-    fn products() -> Vec<SpecificProduct<Self>>
-    where
-        Self: Sized + ProductMarker;
     fn product_specific_card_content(&self) -> Markup;
-}
-
-// TODO: Remove after first implementation
-#[derive(Hash, PartialEq, Eq)]
-pub struct DummyProduct {
-    dummy: String,
-}
-
-impl PageBuilder for DummyProduct {
-    fn page_title() -> String {
-        "Dummy Products".to_string()
-    }
-
-    fn products() -> Vec<SpecificProduct<Self>>
-    where
-        Self: Sized,
-    {
-        let product1 = Product {
-            id: 0,
-            name: "Willensfreiheit in Ketten".to_string(),
-            description:
-                "Nach der Flucht seines Bruders, verzweifelt Fahim an der Existenz der Willensfreiheit."
-                    .to_string(),
-            uploaddate: 1,
-            updatedate: 1,
-        };
-
-        let product2 = Product {
-            id: 1,
-            name: "Aufbruch und Abbruch".to_string(),
-            description: "Ein frischer Absolvent muss sich vor der ersten Quest nur noch bei der Gilde für Heilkünstler anmelden.".to_string(),
-            uploaddate: 1,
-            updatedate: 1,
-        };
-
-        let product3 = Product {
-            id: 2,
-            name: "Mit gutem Gewissen".to_string(),
-            description: "Ein frischer Absolvent muss sich vor der ersten Quest nur noch bei der Gilde für Heilkünstler anmelden.".to_string(),
-            uploaddate: 1,
-            updatedate: 1,
-        };
-
-        let test1 = DummyProduct {
-            dummy: "/".to_string(),
-        };
-
-        let test2 = DummyProduct {
-            dummy: "/".to_string(),
-        };
-
-        let test3 = DummyProduct {
-            dummy: "/".to_string(),
-        };
-
-        let specific1 = SpecificProduct {
-            product: product1,
-            specific: test1,
-        };
-
-        let specific2 = SpecificProduct {
-            product: product2,
-            specific: test2,
-        };
-
-        let specific3 = SpecificProduct {
-            product: product3,
-            specific: test3,
-        };
-
-        vec![specific1, specific2, specific3]
-    }
-
-    fn product_specific_card_content(&self) -> Markup {
-        html!(
-            a class="mt-9 text-[#601B69] dark:text-[#E1B1E7]" href=(self.dummy) {
-                "Link"
-            }
-        )
-    }
-}
-
-impl ProductMarker for DummyProduct {}
-
-// TODO: Refactoring
-pub struct SpecificProduct<T: ProductMarker> {
-    product: Product,
-    specific: T,
 }

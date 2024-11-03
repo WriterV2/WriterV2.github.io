@@ -7,4 +7,8 @@ pub struct Game {
     pub pid: i64,
 }
 
-impl ProductMarker for Game {}
+impl ProductMarker for Game {
+    fn product_id(&self) -> i64 {
+        self.pid
+    }
+}
