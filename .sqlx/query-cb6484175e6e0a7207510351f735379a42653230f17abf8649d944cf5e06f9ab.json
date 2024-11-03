@@ -1,0 +1,44 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO story (language, pdf, epub, pid) VALUES ($1, $2, $3, $4) RETURNING id, language, pdf, epub, pid",
+  "describe": {
+    "columns": [
+      {
+        "name": "id",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "language",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "pdf",
+        "ordinal": 2,
+        "type_info": "Blob"
+      },
+      {
+        "name": "epub",
+        "ordinal": 3,
+        "type_info": "Blob"
+      },
+      {
+        "name": "pid",
+        "ordinal": 4,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "cb6484175e6e0a7207510351f735379a42653230f17abf8649d944cf5e06f9ab"
+}

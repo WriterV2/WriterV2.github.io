@@ -1,0 +1,44 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT * FROM story",
+  "describe": {
+    "columns": [
+      {
+        "name": "id",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "language",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "pdf",
+        "ordinal": 2,
+        "type_info": "Blob"
+      },
+      {
+        "name": "epub",
+        "ordinal": 3,
+        "type_info": "Blob"
+      },
+      {
+        "name": "pid",
+        "ordinal": 4,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "312cace7ec199361a6df0b9dc6fd308a8eaf1b9f7d0dab531164961142ba041f"
+}

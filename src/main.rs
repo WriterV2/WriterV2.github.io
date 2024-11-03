@@ -10,10 +10,11 @@ mod handlers;
 #[tokio::main]
 async fn main() {
     dotenv().ok();
+    let db_url =
+        &env::var("DATABASE_URL").expect("Failed to get environment variable DATABASE_URL");
+
     let pool = SqlitePoolOptions::new()
-        .connect(
-            &env::var("DATABASE_URL").expect("Failed to get environment variable DATABASE_URL"),
-        )
+        .connect(db_url)
         .await
         .expect("Failed to connect to database");
 

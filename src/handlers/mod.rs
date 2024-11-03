@@ -26,7 +26,7 @@ pub async fn router(pool: SqlitePool) -> Router {
         .layer(middleware::from_fn(admin_middleware))
         .route("/", get(home))
         .route("/stories", get(build_page::<DummyProduct>))
-        .nest_service("/static", ServeDir::new("src/static"))
+        .nest_service("/static", ServeDir::new("static"))
         .layer(DefaultBodyLimit::max(1074000000))
         .layer(AddExtensionLayer::new(ApiContext { pool }))
 }
