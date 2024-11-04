@@ -1,5 +1,6 @@
 use axum::response::IntoResponse;
 use axum::Extension;
+use chrono::DateTime;
 use maud::{html, Markup, DOCTYPE};
 
 use crate::db::product::{get_all_specificproducts, ProductMarker, SpecificProduct};
@@ -57,6 +58,14 @@ fn cards<T: PageBuilder + ProductMarker>(
 }
 
 fn card<T: PageBuilder + ProductMarker>(specific_product: SpecificProduct<T>) -> Markup {
+    let date = |i: i64| -> String {
+        if let Some(datetime) = DateTime::from_timestamp(i / 1_000, 0) {
+            return format!("{}", datetime.format("%Y/%m/%d")).to_string();
+        }
+        "Unknown".to_string()
+    };
+    let upload_date = date(specific_product.product.uploaddate);
+    let update_date = date(specific_product.product.updatedate);
     html!(
         div class="p-9 shadow" {
             h2 class="text-[#601B69] dark:text-[#E1B1E7]" {
@@ -69,8 +78,10 @@ fn card<T: PageBuilder + ProductMarker>(specific_product: SpecificProduct<T>) ->
                 (specific_product.detail.product_specific_card_content())
             }
             div class="flex flex-row space-x-5 mt-9 text-xs" {
-                span {"Update: " (specific_product.product.updatedate)}
-                span {"Upload: " (specific_product.product.uploaddate)}
+                span {"Upload: " (upload_date)}
+                @if upload_date != update_date {
+                    span {"Update: " (update_date)}
+                }
             }
         }
     )
