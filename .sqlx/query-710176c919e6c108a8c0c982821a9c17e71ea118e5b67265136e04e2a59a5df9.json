@@ -1,0 +1,32 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT p.name, s.pdf, s.epub FROM story s INNER JOIN product p ON s.pid = p.id",
+  "describe": {
+    "columns": [
+      {
+        "name": "name",
+        "ordinal": 0,
+        "type_info": "Text"
+      },
+      {
+        "name": "pdf",
+        "ordinal": 1,
+        "type_info": "Blob"
+      },
+      {
+        "name": "epub",
+        "ordinal": 2,
+        "type_info": "Blob"
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "710176c919e6c108a8c0c982821a9c17e71ea118e5b67265136e04e2a59a5df9"
+}

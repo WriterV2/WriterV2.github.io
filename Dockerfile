@@ -1,5 +1,5 @@
 # Planner stage - Compute dependencies and create recipe
-FROM lukemathwalker/cargo-chef:latest-rust-1.75 AS planner
+FROM lukemathwalker/cargo-chef:latest-rust-1.82 AS planner
 WORKDIR /app
 # Copy the minimal files needed for dependency calculation
 COPY Cargo.* ./
@@ -7,13 +7,13 @@ COPY src/ src/
 RUN cargo chef prepare --recipe-path recipe.json
 
 # Cache dependencies stage
-FROM lukemathwalker/cargo-chef:latest-rust-1.75 AS cacher
+FROM lukemathwalker/cargo-chef:latest-rust-1.82 AS cacher
 WORKDIR /app
 COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 
 # Builder stage
-FROM lukemathwalker/cargo-chef:latest-rust-1.75 AS builder
+FROM lukemathwalker/cargo-chef:latest-rust-1.82 AS builder
 WORKDIR /app
 
 # Copy the entire project context

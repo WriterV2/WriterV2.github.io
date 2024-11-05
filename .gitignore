@@ -2,3 +2,5 @@
 /target
 *.db*
 .env
+static/*.pdf
+static/*.epub

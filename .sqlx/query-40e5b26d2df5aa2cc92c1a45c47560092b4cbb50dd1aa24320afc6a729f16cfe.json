@@ -1,0 +1,44 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT * FROM product",
+  "describe": {
+    "columns": [
+      {
+        "name": "id",
+        "ordinal": 0,
+        "type_info": "Integer"
+      },
+      {
+        "name": "name",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "description",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "uploaddate",
+        "ordinal": 3,
+        "type_info": "Integer"
+      },
+      {
+        "name": "updatedate",
+        "ordinal": 4,
+        "type_info": "Integer"
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "40e5b26d2df5aa2cc92c1a45c47560092b4cbb50dd1aa24320afc6a729f16cfe"
+}

@@ -1,3 +1,7 @@
+use std::ffi::OsStr;
+use std::fs::{read_dir, remove_file};
+use std::io::{BufWriter, Write};
+
 use axum::async_trait;
 use maud::html;
 use sqlx::SqlitePool;
@@ -23,6 +27,30 @@ impl ProductMarker for Story {
     fn product_id(&self) -> i64 {
         self.pid
     }
+}
+
+pub async fn synchronize_story_files(pool: &SqlitePool) -> Result<(), anyhow::Error> {
+    for entry in read_dir("static")? {
+        let path = entry?.path();
+        if path.extension().is_some_and(|ext| ext == OsStr::new("pdf") || ext == OsStr::new("epub")) {
+            remove_file(path)?;
+        }
+    }
+    let results = sqlx::query!("SELECT p.name, s.pdf, s.epub FROM story s INNER JOIN product p ON s.pid = p.id").fetch_all(pool).await?;
+    for result in results.iter() {
+        let mut pdf_filename = format!("{}.pdf", result.name).to_lowercase();
+        pdf_filename.retain(|c| !c.is_whitespace());
+
+        let file = std::fs::File::create_new(format!("static/{}", pdf_filename))?;
+        BufWriter::new(file).write_all(&result.pdf.to_vec())?;
+
+        let mut epub_filename = format!("{}.epub", result.name).to_lowercase();
+        epub_filename.retain(|c| !c.is_whitespace());
+
+        let file = std::fs::File::create_new(format!("static/{}", epub_filename))?;
+        BufWriter::new(file).write_all(&result.epub.to_vec())?;
+    }
+    Ok(())
 }
 
 #[async_trait]

@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::io::{BufWriter, Write};
 
 use anyhow::Context;
 use axum::body::Bytes;
@@ -94,12 +95,22 @@ pub async fn upload_story(
     };
 
     let pdf = if let Some(pdf_value) = form.get("pdf") {
+        let mut filename = format!("{}.pdf", name).to_lowercase();
+        filename.retain(|c| !c.is_whitespace());
+
+        let file = std::fs::File::create_new(format!("static/{}", filename))?;
+        BufWriter::new(file).write_all(pdf_value)?;
         pdf_value.to_vec()
     } else {
         return Ok(StatusCode::BAD_REQUEST.into_response());
     };
 
     let epub = if let Some(epub_value) = form.get("epub") {
+        let mut filename = format!("{}.epub", name).to_lowercase();
+        filename.retain(|c| !c.is_whitespace());
+
+        let file = std::fs::File::create_new(format!("static/{}", filename))?;
+        BufWriter::new(file).write_all(epub_value)?;
         epub_value.to_vec()
     } else {
         return Ok(StatusCode::BAD_REQUEST.into_response());

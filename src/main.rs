@@ -3,6 +3,8 @@ use std::env;
 use dotenvy::dotenv;
 use sqlx::sqlite::SqlitePoolOptions;
 
+use self::db::story;
+
 pub mod db;
 mod error;
 mod handlers;
@@ -22,6 +24,10 @@ async fn main() {
         .run(&pool)
         .await
         .expect("Failed to run migrations");
+
+    story::synchronize_story_files(&pool)
+        .await
+        .expect("Failed to synchronize files");
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, handlers::router(pool).await.into_make_service())
