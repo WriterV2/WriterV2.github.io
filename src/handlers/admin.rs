@@ -11,7 +11,7 @@ use axum::{Extension, Json};
 use rand::Rng;
 use subtle::ConstantTimeEq;
 
-use crate::db::story::Story;
+use crate::db::story::{format_filepath, Story};
 use crate::db::ProductDatabaseHandler;
 use crate::error::AppError;
 
@@ -95,10 +95,8 @@ pub async fn upload_story(
     };
 
     let pdf = if let Some(pdf_value) = form.get("pdf") {
-        let mut filename = format!("{}.pdf", name).to_lowercase();
-        filename.retain(|c| !c.is_whitespace());
-
-        let file = std::fs::File::create_new(format!("static/{}", filename))?;
+        let filename = format_filepath(&name, "pdf");
+        let file = std::fs::File::create_new(filename)?;
         BufWriter::new(file).write_all(pdf_value)?;
         pdf_value.to_vec()
     } else {
@@ -106,10 +104,8 @@ pub async fn upload_story(
     };
 
     let epub = if let Some(epub_value) = form.get("epub") {
-        let mut filename = format!("{}.epub", name).to_lowercase();
-        filename.retain(|c| !c.is_whitespace());
-
-        let file = std::fs::File::create_new(format!("static/{}", filename))?;
+        let filename = format_filepath(&name, "epub");
+        let file = std::fs::File::create_new(filename)?;
         BufWriter::new(file).write_all(epub_value)?;
         epub_value.to_vec()
     } else {

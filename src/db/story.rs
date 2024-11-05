@@ -2,6 +2,7 @@ use std::ffi::OsStr;
 use std::fs::{read_dir, remove_file};
 use std::io::{BufWriter, Write};
 
+use anyhow::Context;
 use axum::async_trait;
 use maud::html;
 use sqlx::SqlitePool;
@@ -30,25 +31,21 @@ impl ProductMarker for Story {
 }
 
 pub async fn synchronize_story_files(pool: &SqlitePool) -> Result<(), anyhow::Error> {
-    for entry in read_dir("static")? {
-        let path = entry?.path();
+    for entry in read_dir("static").with_context(|| "Failed to read directory")? {
+        let path = entry.with_context(|| "Failed to get entry")?.path();
         if path.extension().is_some_and(|ext| ext == OsStr::new("pdf") || ext == OsStr::new("epub")) {
-            remove_file(path)?;
+            remove_file(path).with_context(|| "Failed to remove file")?;
         }
     }
     let results = sqlx::query!("SELECT p.name, s.pdf, s.epub FROM story s INNER JOIN product p ON s.pid = p.id").fetch_all(pool).await?;
     for result in results.iter() {
-        let mut pdf_filename = format!("{}.pdf", result.name).to_lowercase();
-        pdf_filename.retain(|c| !c.is_whitespace());
+        let pdf_filename = format_filepath(&result.name, "pdf");
+        let file = std::fs::File::create_new(&pdf_filename).with_context(|| format!("Failed to create {}", &pdf_filename))?;
+        BufWriter::new(file).write_all(&result.pdf.to_vec()).with_context(|| format!("Failed to write {}", &pdf_filename))?;
 
-        let file = std::fs::File::create_new(format!("static/{}", pdf_filename))?;
-        BufWriter::new(file).write_all(&result.pdf.to_vec())?;
-
-        let mut epub_filename = format!("{}.epub", result.name).to_lowercase();
-        epub_filename.retain(|c| !c.is_whitespace());
-
-        let file = std::fs::File::create_new(format!("static/{}", epub_filename))?;
-        BufWriter::new(file).write_all(&result.epub.to_vec())?;
+        let epub_filename = format_filepath(&result.name, "epub");
+        let file = std::fs::File::create_new(&epub_filename).with_context(|| format!("Failed to create {}", &epub_filename))?;
+        BufWriter::new(file).write_all(&result.epub.to_vec()).with_context(|| format!("Failed to write {}", &epub_filename))?;
     }
     Ok(())
 }
@@ -101,13 +98,26 @@ impl ProductDatabaseHandler for Story {
 impl PageBuilder for Story {
    fn page_title() -> String {
         "Stories".to_string()
-    } 
+   } 
 
-   // TODO: Add pdf and epub download link + language info
-   fn product_specific_card_content(&self) -> maud::Markup {
+   // TODO: Add pdf and epub icons
+   fn product_specific_card_content<T: PageBuilder + ProductMarker>
+       (&self, specific_product: &super::product::SpecificProduct<T>) -> maud::Markup {
        html!(
-           span {
+           div class="flex justify-start mt-5 text-sm" {
+               span class="mr-10" { (&self.language) }
+               div class="flex justify-between" {
+                   a href=(format_filepath(&specific_product.product.name, "pdf")) { "PDF" }
+                   a href=(format_filepath(&specific_product.product.name, "epub")) { "EPUB" }
+               }
            }
-       )
+        )
    }
 }
+
+pub fn format_filepath(name: &str, extension: &str) -> String {
+    let mut filename = format!("static/{}.{}", name, extension).to_lowercase();
+    filename.retain(|c| !c.is_whitespace());
+    filename
+}
+

@@ -75,7 +75,7 @@ fn card<T: PageBuilder + ProductMarker>(specific_product: SpecificProduct<T>) ->
                 (specific_product.product.description)
             }
             div {
-                (specific_product.detail.product_specific_card_content())
+                (specific_product.detail.product_specific_card_content(&specific_product))
             }
             div class="flex flex-row space-x-5 mt-9 text-xs" {
                 span {"Upload: " (upload_date)}
@@ -114,5 +114,8 @@ pub async fn build_page<T: Sized + ProductMarker + PageBuilder + ProductDatabase
 
 pub trait PageBuilder {
     fn page_title() -> String;
-    fn product_specific_card_content(&self) -> Markup;
+    fn product_specific_card_content<T: PageBuilder + ProductMarker>(
+        &self,
+        specific_product: &SpecificProduct<T>,
+    ) -> Markup;
 }
