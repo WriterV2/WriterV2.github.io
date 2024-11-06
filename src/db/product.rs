@@ -1,6 +1,7 @@
 use std::collections::HashMap;
+use std::time::SystemTime;
 
-use sqlx::SqlitePool;
+use sqlx::{Sqlite, SqlitePool, Transaction};
 
 use crate::error::AppError;
 
@@ -13,6 +14,22 @@ pub struct Product {
     pub description: String,
     pub uploaddate: i64,
     pub updatedate: i64,
+}
+
+impl Product {
+    pub async fn post(tx: &mut Transaction<'static, Sqlite>, name: String, description: String) -> Result<Product, AppError> {
+        let now = SystemTime::now().duration_since(std::time::UNIX_EPOCH)?.as_millis() as i64;
+        let product = sqlx::query_as!(
+            Product, 
+            "INSERT INTO product (name, description, uploaddate, updatedate) VALUES ($1, $2, $3, $4) RETURNING id, name, description, uploaddate, updatedate", 
+            name, 
+            description,
+            now,
+            now)
+            .fetch_one(&mut **tx)
+            .await?;
+        Ok(product)
+    }
 }
 
 pub trait ProductMarker {
