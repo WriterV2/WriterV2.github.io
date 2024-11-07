@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "DELETE FROM story WHERE pid = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "07b6199b50db665e1a31ded4a8612d16f230448c97a8eb301948e9f3f0955763"
+}

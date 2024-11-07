@@ -132,3 +132,21 @@ pub async fn upload_story(
         .await?;
     Ok((StatusCode::CREATED, Json(story)).into_response())
 }
+
+pub async fn delete_story(
+    ctx: Extension<ApiContext>,
+    mut multipart: Multipart,
+) -> Result<impl IntoResponse, AppError> {
+    if let Some(field) = multipart.next_field().await? {
+        if let Some(label) = field.name() {
+            if label == "id" {
+                let pid = field.text().await?.parse::<i64>()?;
+                Story::delete(&ctx.pool, pid).await?;
+                return Ok((StatusCode::NO_CONTENT).into_response());
+            }
+            return Ok(StatusCode::BAD_REQUEST.into_response());
+        }
+        return Ok(StatusCode::BAD_REQUEST.into_response());
+    }
+    Ok(StatusCode::BAD_REQUEST.into_response())
+}

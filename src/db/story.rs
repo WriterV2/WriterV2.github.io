@@ -99,6 +99,19 @@ impl ProductDatabaseHandler for Story {
 
         Ok(story)
     }
+
+    async fn delete(pool: &SqlitePool, pid: i64) -> Result<(), AppError>
+    where
+        Self: Sized,
+    {
+        let mut tx = pool.begin().await?;
+        sqlx::query!("DELETE FROM story WHERE pid = $1", pid)
+            .execute(&mut *tx)
+            .await?;
+        Product::delete(&mut tx, pid).await?;
+        tx.commit().await?;
+        Ok(())
+    }
 }
 
 impl PageBuilder for Story {

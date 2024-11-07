@@ -25,4 +25,8 @@ pub trait ProductDatabaseHandler {
     ) -> Result<Self, AppError>
     where
         Self: Sized;
+
+    async fn delete(pool: &SqlitePool, id: i64) -> Result<(), AppError>
+    where
+        Self: Sized;
 }

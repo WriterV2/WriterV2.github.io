@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "DELETE FROM producttag WHERE pid = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "c924cd379b966e7ca47f2c8a6c97d9d641db0e8be85f6776d34c59801329f27c"
+}

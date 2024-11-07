@@ -9,7 +9,7 @@ use sqlx::SqlitePool;
 use tower_http::add_extension::AddExtensionLayer;
 use tower_http::services::ServeDir;
 
-use admin::{admin_healthcheck, admin_middleware, generate_token, upload_story};
+use admin::{admin_healthcheck, admin_middleware, delete_story, generate_token, upload_story};
 use frontend_builder::home;
 
 use crate::db::story::Story;
@@ -35,7 +35,7 @@ pub async fn router(pool: SqlitePool) -> Router {
     };
 
     Router::new()
-        .route("/admin/story", post(upload_story))
+        .route("/admin/story", post(upload_story).delete(delete_story))
         .route("/admin", get(admin_healthcheck))
         .layer(middleware::from_fn_with_state(
             state.clone(),

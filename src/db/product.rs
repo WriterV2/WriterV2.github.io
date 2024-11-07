@@ -5,7 +5,6 @@ use sqlx::{QueryBuilder, Sqlite, SqlitePool, Transaction};
 
 use crate::error::AppError;
 
-use super::producttag::ProductTag;
 use super::tag::Tag;
 use super::ProductDatabaseHandler;
 
@@ -49,6 +48,12 @@ impl Product {
 
         }
         Ok(product)
+    }
+
+    pub async fn delete(tx: &mut Transaction<'static, Sqlite>, pid: i64) -> Result<(), AppError> {
+        sqlx::query!("DELETE FROM producttag WHERE pid = $1", pid).execute(&mut **tx).await?;
+        sqlx::query!("DELETE FROM product WHERE id = $1", pid).execute(&mut **tx).await?;
+        Ok(())
     }
 }
 
