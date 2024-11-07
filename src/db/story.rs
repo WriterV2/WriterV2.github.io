@@ -78,12 +78,13 @@ impl ProductDatabaseHandler for Story {
         pool: &SqlitePool,
         name: String,
         description: String,
+        tags: Vec<String>,
     ) -> Result<Self, AppError>
     where
         Self: Sized,
     {
         let mut tx = pool.begin().await?;
-        let product = Product::post(&mut tx, name, description).await?;
+        let product = Product::post(&mut tx, name, description, tags).await?;
         let story = sqlx::query_as!(
             Story,
             "INSERT INTO story (language, pdf, epub, pid) VALUES ($1, $2, $3, $4) RETURNING id, language, pdf, epub, pid", 

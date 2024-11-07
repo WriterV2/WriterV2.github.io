@@ -21,6 +21,7 @@ pub trait ProductDatabaseHandler {
         pool: &SqlitePool,
         name: String,
         description: String,
+        tags: Vec<String>,
     ) -> Result<Self, AppError>
     where
         Self: Sized;

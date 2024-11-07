@@ -112,6 +112,13 @@ pub async fn upload_story(
         return Ok(StatusCode::BAD_REQUEST.into_response());
     };
 
+    let mut tags: Vec<String> = Vec::new();
+    if let Some(tags_value) = form.get("tag") {
+        for tag in String::from_utf8(tags_value.to_vec())?.split(",") {
+            tags.push(tag.trim().to_string());
+        }
+    }
+
     let story_template = Story {
         id: 0,
         pid: 0,
@@ -120,6 +127,8 @@ pub async fn upload_story(
         epub,
     };
 
-    let story = story_template.post(&ctx.pool, name, description).await?;
+    let story = story_template
+        .post(&ctx.pool, name, description, tags)
+        .await?;
     Ok((StatusCode::CREATED, Json(story)).into_response())
 }

@@ -1,10 +1,12 @@
 use std::collections::HashMap;
 use std::time::SystemTime;
 
-use sqlx::{Sqlite, SqlitePool, Transaction};
+use sqlx::{QueryBuilder, Sqlite, SqlitePool, Transaction};
 
 use crate::error::AppError;
 
+use super::producttag::ProductTag;
+use super::tag::Tag;
 use super::ProductDatabaseHandler;
 
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
@@ -17,7 +19,7 @@ pub struct Product {
 }
 
 impl Product {
-    pub async fn post(tx: &mut Transaction<'static, Sqlite>, name: String, description: String) -> Result<Product, AppError> {
+    pub async fn post(tx: &mut Transaction<'static, Sqlite>, name: String, description: String, tags: Vec<String>) -> Result<Product, AppError> {
         let now = SystemTime::now().duration_since(std::time::UNIX_EPOCH)?.as_millis() as i64;
         let product = sqlx::query_as!(
             Product, 
@@ -28,6 +30,24 @@ impl Product {
             now)
             .fetch_one(&mut **tx)
             .await?;
+
+        if !tags.is_empty() {
+            let mut tags_query_builder: QueryBuilder<Sqlite> = QueryBuilder::new("INSERT INTO tag (name) ");
+            tags_query_builder.push_values(tags.iter(), | mut b, tag | { b.push_bind(tag); });
+            tags_query_builder.push(" RETURNING id, name;");
+            let added_tags: Vec<Tag> = tags_query_builder
+                .build_query_as::<Tag>()
+                .fetch_all(&mut **tx)
+                .await?;
+
+            let mut producttags_query_builder: QueryBuilder<Sqlite> = QueryBuilder::new("INSERT INTO producttag (pid, tid) ");
+            producttags_query_builder.push_values(added_tags.iter(), | mut b, added_tag | {
+                b.push_bind(product.id).push_bind(added_tag.id);
+            });
+            producttags_query_builder
+                .build().execute(&mut **tx).await?;
+
+        }
         Ok(product)
     }
 }
