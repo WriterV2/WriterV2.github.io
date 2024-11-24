@@ -31,13 +31,14 @@ impl Product {
             .await?;
 
         if !tags.is_empty() {
-            let mut tags_query_builder: QueryBuilder<Sqlite> = QueryBuilder::new("INSERT INTO tag (name) ");
+            let mut tags_query_builder: QueryBuilder<Sqlite> = QueryBuilder::new("INSERT OR REPLACE INTO tag (name) ");
             tags_query_builder.push_values(tags.iter(), | mut b, tag | { b.push_bind(tag); });
             tags_query_builder.push(" RETURNING id, name;");
             let added_tags: Vec<Tag> = tags_query_builder
                 .build_query_as::<Tag>()
                 .fetch_all(&mut **tx)
                 .await?;
+            println!("{:?}", added_tags);
 
             let mut producttags_query_builder: QueryBuilder<Sqlite> = QueryBuilder::new("INSERT INTO producttag (pid, tid) ");
             producttags_query_builder.push_values(added_tags.iter(), | mut b, added_tag | {
