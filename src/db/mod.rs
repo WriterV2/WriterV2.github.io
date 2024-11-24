@@ -19,9 +19,9 @@ pub trait ProductDatabaseHandler {
     async fn post(
         &self,
         pool: &SqlitePool,
-        name: String,
-        description: String,
-        tags: Vec<String>,
+        name: &str,
+        description: &str,
+        tags: Vec<&str>,
     ) -> Result<Self, AppError>
     where
         Self: Sized;

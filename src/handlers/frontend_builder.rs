@@ -8,10 +8,10 @@ use crate::db::ProductDatabaseHandler;
 use crate::error::AppError;
 
 pub async fn home() -> Result<impl IntoResponse, AppError> {
-    Ok(html!((page("Home".to_string(), Markup::default()))))
+    Ok(html!((page("Home", Markup::default()))))
 }
 
-fn page(page_title: String, content: Markup) -> Markup {
+fn page(page_title: &str, content: Markup) -> Markup {
     html!(
         (head(page_title))
         body class="bg-[#eae3d2] text-[#333] dark:bg-[#333] dark:text-[#eae3d2] font-mono text-base" {
@@ -41,9 +41,9 @@ fn navbar() -> Markup {
     })
 }
 
-fn cards<T: PageBuilder + ProductMarker>(
+fn cards<'a, T: PageBuilder<'a> + ProductMarker>(
     products: Vec<SpecificProduct<T>>,
-    category: String,
+    category: &str,
 ) -> Markup {
     html!(
         div class="m-12" {
@@ -57,7 +57,7 @@ fn cards<T: PageBuilder + ProductMarker>(
     )
 }
 
-fn card<T: PageBuilder + ProductMarker>(specific_product: SpecificProduct<T>) -> Markup {
+fn card<'a, T: PageBuilder<'a> + ProductMarker>(specific_product: SpecificProduct<T>) -> Markup {
     let date = |i: i64| -> String {
         if let Some(datetime) = DateTime::from_timestamp(i / 1_000, 0) {
             return format!("{}", datetime.format("%Y/%m/%d")).to_string();
@@ -87,7 +87,7 @@ fn card<T: PageBuilder + ProductMarker>(specific_product: SpecificProduct<T>) ->
     )
 }
 
-fn head(page_title: String) -> Markup {
+fn head(page_title: &str) -> Markup {
     html! {
         head {
             (DOCTYPE)
@@ -98,7 +98,7 @@ fn head(page_title: String) -> Markup {
     }
 }
 
-pub async fn build_page<T: Sized + ProductMarker + PageBuilder + ProductDatabaseHandler>(
+pub async fn build_page<'a, T: Sized + ProductMarker + PageBuilder<'a> + ProductDatabaseHandler>(
     ctx: Extension<super::ApiContext>,
 ) -> Result<impl IntoResponse, AppError> {
     Ok(html!(
@@ -112,9 +112,9 @@ pub async fn build_page<T: Sized + ProductMarker + PageBuilder + ProductDatabase
     ))
 }
 
-pub trait PageBuilder {
-    fn page_title() -> String;
-    fn product_specific_card_content<T: PageBuilder + ProductMarker>(
+pub trait PageBuilder<'a> {
+    fn page_title() -> &'a str;
+    fn product_specific_card_content<T: PageBuilder<'a> + ProductMarker>(
         &self,
         specific_product: &SpecificProduct<T>,
     ) -> Markup;

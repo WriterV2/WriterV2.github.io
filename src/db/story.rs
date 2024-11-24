@@ -76,9 +76,9 @@ impl ProductDatabaseHandler for Story {
     async fn post(
         &self,
         pool: &SqlitePool,
-        name: String,
-        description: String,
-        tags: Vec<String>,
+        name: &str,
+        description: &str,
+        tags: Vec<&str>,
     ) -> Result<Self, AppError>
     where
         Self: Sized,
@@ -114,13 +114,13 @@ impl ProductDatabaseHandler for Story {
     }
 }
 
-impl PageBuilder for Story {
-    fn page_title() -> String {
-        "Stories".to_string()
+impl<'a> PageBuilder<'a> for Story {
+    fn page_title() -> &'a str {
+        "Stories"
     }
 
     // TODO: Add pdf and epub icons
-    fn product_specific_card_content<T: PageBuilder + ProductMarker>(
+    fn product_specific_card_content<T: PageBuilder<'a> + ProductMarker>(
         &self,
         specific_product: &super::product::SpecificProduct<T>,
     ) -> maud::Markup {

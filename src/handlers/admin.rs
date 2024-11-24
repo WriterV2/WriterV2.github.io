@@ -76,14 +76,13 @@ pub async fn upload_story(
     }
 
     let name = if let Some(name_value) = form.get("name") {
-        String::from_utf8(name_value.to_vec()).with_context(|| "Failed to parse name")?
+        std::str::from_utf8(name_value).with_context(|| "Failed to parse name")?
     } else {
         return Ok(StatusCode::BAD_REQUEST.into_response());
     };
 
     let description = if let Some(description_value) = form.get("description") {
-        String::from_utf8(description_value.to_vec())
-            .with_context(|| "Failed to parse description")?
+        std::str::from_utf8(description_value).with_context(|| "Failed to parse description")?
     } else {
         return Ok(StatusCode::BAD_REQUEST.into_response());
     };
@@ -95,7 +94,7 @@ pub async fn upload_story(
     };
 
     let pdf = if let Some(pdf_value) = form.get("pdf") {
-        let filename = format_filepath(&name, "pdf");
+        let filename = format_filepath(name, "pdf");
         let file = std::fs::File::create_new(filename)?;
         BufWriter::new(file).write_all(pdf_value)?;
         pdf_value.to_vec()
@@ -104,7 +103,7 @@ pub async fn upload_story(
     };
 
     let epub = if let Some(epub_value) = form.get("epub") {
-        let filename = format_filepath(&name, "epub");
+        let filename = format_filepath(name, "epub");
         let file = std::fs::File::create_new(filename)?;
         BufWriter::new(file).write_all(epub_value)?;
         epub_value.to_vec()
@@ -112,10 +111,11 @@ pub async fn upload_story(
         return Ok(StatusCode::BAD_REQUEST.into_response());
     };
 
-    let mut tags: Vec<String> = Vec::new();
+    let mut tags: Vec<&str> = Vec::new();
     if let Some(tags_value) = form.get("tag") {
-        for tag in String::from_utf8(tags_value.to_vec())?.split(",") {
-            tags.push(tag.trim().to_string());
+        let tagstring = std::str::from_utf8(tags_value)?;
+        for tag in tagstring.split(",") {
+            tags.push(tag.trim());
         }
     }
 

@@ -18,7 +18,7 @@ pub struct Product {
 }
 
 impl Product {
-    pub async fn post(tx: &mut Transaction<'static, Sqlite>, name: String, description: String, tags: Vec<String>) -> Result<Product, AppError> {
+    pub async fn post(tx: &mut Transaction<'static, Sqlite>, name: &str, description: &str, tags: Vec<&str>) -> Result<Product, AppError> {
         let now = SystemTime::now().duration_since(std::time::UNIX_EPOCH)?.as_millis() as i64;
         let product = sqlx::query_as!(
             Product, 
